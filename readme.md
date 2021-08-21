@@ -48,8 +48,6 @@ npm run bootstrap # Initialize the database
 npm run dev       # Start the dev server
 ```
 
-> :warning: The `react-markdown` package that we use to render markdown doesn't work in development mode. We're trying to fix the issue. It runs fine on production.
-
 When you're happy with the results, you can build and run a production server with these commands:
 
 ```sh
