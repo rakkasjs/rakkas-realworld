@@ -6,7 +6,7 @@
 
 This codebase was created to demonstrate a fully fledged fullstack application built with **[Rakkas](https://rakkasjs.org)** including CRUD operations, authentication, routing, pagination, and more.
 
-**Rakkas** is a new framework without established styleguides & best practices as of yet. This project is the one of the first step towards establishing them.
+**Rakkas** is a new framework without established styleguides & best practices as of yet. This project is one of the first step towards establishing them.
 
 For more information on how this works with other frontends/backends, head over to the [RealWorld](https://github.com/gothinkster/realworld) repo.
 
@@ -47,6 +47,8 @@ Once the environment variables are set, you can start a development server by ru
 npm run bootstrap # Initialize the database
 npm run dev       # Start the dev server
 ```
+
+> :warning: The `react-markdown` package that we use to render markdown doesn't work in development mode. We're trying to fix the issue. It runs fine on production.
 
 When you're happy with the results, you can build and run a production server with these commands:
 
@@ -115,7 +117,7 @@ Since most of the **Rakkas RealWorld** core consists of either dumb view code co
 **End-to-end tests** use `cypress` and they test the common interaction scenarios. They are located in the `cypress` directory.
 
 ### Porting to other database systems
-Thanks to Prisma, **Rakkas RealWorld** can run on MySQL/MariaDB or PostgreSQL (and possibly others) as well as on SQLite. Just follow these steps:
+Thanks to Prisma, **Rakkas RealWorld** is known to be able to run on MySQL/MariaDB or PostgreSQL  as well as on SQLite. Just follow these steps:
 
 1. Change the `provider` in the file `prisma/schema.prisma` to `mysql` or `postgresql`.
 2. Remove the `prisma/migrations` directory and its contents.
@@ -126,7 +128,7 @@ Thanks to Prisma, **Rakkas RealWorld** can run on MySQL/MariaDB or PostgreSQL (a
 Porting to MongoDB or SQL Server should be similarly straightforward but it hasn't been tested.
 
 ### Connecting to a different backend
-Open your browsers developer console and type the following:
+Open your browser's developer console and type the following:
 
 ```js
 document.cookie="apiUrl=" + encodeURIComponent("https://conduit.productionready.io/api") // Or any other compatible backend URL
@@ -142,5 +144,5 @@ Obviously, login sessions will not carry between different backends. Also please
 
 ## Credits
 - Templates and design by [Thinkster](https://thinkster.io) under [MIT License](https://opensource.org/licenses/MIT).
-- Rakkas port by Fatih Aygün, under [MIT License](https://opensource.org/licenses/MIT).
+- Rakkas port by [Fatih Aygün](https://github.com/cyco130), under [MIT License](https://opensource.org/licenses/MIT).
 - Logomark: “Flamenco” by [gzz from Noun Project](https://thenounproject.com/term/flamenco/111303) (not affiliated) under [Creative Commons Attribution Generic license (CCBY)](https://creativecommons.org/licenses/by/2.0/)
