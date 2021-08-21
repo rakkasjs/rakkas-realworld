@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"strict": true,
+		"module": "ES2020",
+		"lib": ["DOM", "DOM.Iterable", "ES2018", "ES2019.Object"],
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"jsx": "react",
+		"target": "es6",
+		"moduleResolution": "node",
+		"types": [
+			"rakkasjs/vite-types",
+			"node",
+			"jest",
+			"@testing-library/jest-dom"
+		],
+		"skipLibCheck": true,
+		"baseUrl": "src"
+	},
+	"include": ["src/**/*", "api-test/**/*"]
+}

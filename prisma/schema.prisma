@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["orderByAggregateGroup", "selectRelationCount"]
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  email        String   @unique
+  username     String   @unique
+  bio          String
+  image        String?
+  passwordHash String
+
+  articles         Article[]
+  favoriteArticles Article[] @relation("favorite")
+  followers        User[]    @relation("follows")
+  followed         User[]    @relation("follows")
+  comments         Comment[]
+
+  @@index([createdAt])
+  @@index([updatedAt])
+}
+
+model Article {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  description String
+  body        String
+
+  authorId Int
+
+  author User @relation(fields: [authorId], references: [id])
+
+  tags        ArticleTags[]
+  favoritedBy User[]        @relation("favorite")
+  comments    Comment[]
+
+  @@index([createdAt])
+  @@index([updatedAt])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  body      String
+
+  articleId Int
+  authorId  Int
+
+  article Article @relation(fields: [articleId], references: [id])
+  author  User    @relation(fields: [authorId], references: [id])
+
+  @@index([createdAt])
+  @@index([updatedAt])
+}
+
+model ArticleTags {
+  article Article @relation(fields: [articleId], references: [id])
+
+  articleId Int
+  tagName   String
+
+  @@id([articleId, tagName])
+}

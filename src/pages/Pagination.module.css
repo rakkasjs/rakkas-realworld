@@ -1,0 +1,17 @@
+.paginationItem {
+	display: inline;
+}
+
+.paginationLink {
+	position: relative;
+	display: inline;
+	padding: 0.5rem 0.75rem;
+	margin-left: 0;
+	background-color: #fff;
+	border: 1px solid #ddd;
+	cursor: pointer;
+}
+
+.paginationLink:hover {
+	background-color: #ddd;
+}
