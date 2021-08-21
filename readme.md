@@ -139,3 +139,8 @@ document.cookie="apiUrl=;max-age=0"
 ```
 
 Obviously, login sessions will not carry between different backends. Also please note that other backends aren't compatible with the form API, so the app won't run with JavaScript disabled if you replace the API URL.
+
+## Credits
+- Templates and design by [Thinkster](https://thinkster.io) under [MIT License](https://opensource.org/licenses/MIT).
+- Rakkas port by Fatih Aygün, under [MIT License](https://opensource.org/licenses/MIT).
+- Logomark: “Flamenco” by [gzz from Noun Project](https://thenounproject.com/term/flamenco/111303) (not affiliated) under [Creative Commons Attribution Generic license (CCBY)](https://creativecommons.org/licenses/by/2.0/)
