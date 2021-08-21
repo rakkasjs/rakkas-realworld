@@ -7,6 +7,7 @@ import { addComment, deleteArticle, deleteComment } from "lib/conduit-client";
 import { ConduitContext } from "lib/ConduitContext";
 import { FavoriteButton } from "lib/FavoriteButton";
 import { FollowButton } from "lib/FollowButton";
+import css from "./ArticleView.module.css";
 
 export interface ArticleViewProps {
 	article: Article;
@@ -116,7 +117,7 @@ export const ArticleView: FC<ArticleViewProps> = ({
 
 			<div className="container page">
 				<div className="row article-content">
-					<div className="col-md-12">
+					<div className={"col-md-12 " + css.markdown}>
 						<ReactMarkdown>{article.body}</ReactMarkdown>
 					</div>
 				</div>
