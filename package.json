@@ -25,14 +25,14 @@
 	],
 	"dependencies": {
 		"@prisma/client": "^2.29.1",
-		"@rakkasjs/runner-node": "0.3.0-canary.0",
+		"@rakkasjs/runner-node": "0.3.0",
 		"bcrypt": "^5.0.1",
 		"cookie": "^0.4.1",
 		"dotenv-cli": "^4.0.0",
 		"http-status-codes": "^2.1.4",
 		"jsonwebtoken": "^8.5.1",
 		"prisma": "^2.29.1",
-		"rakkasjs": "0.3.0-canary.0",
+		"rakkasjs": "0.3.0",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",
 		"react-helmet-async": "^1.0.9",
@@ -43,7 +43,7 @@
 		"zod": "^3.7.3"
 	},
 	"devDependencies": {
-		"@rakkasjs/cli": "0.3.0-canary.0",
+		"@rakkasjs/cli": "0.3.0",
 		"@testing-library/jest-dom": "^5.14.1",
 		"@testing-library/react": "^12.0.0",
 		"@types/bcrypt": "^5.0.0",
