@@ -77,8 +77,11 @@ export const put: ConduitArticleRequestHandler = async ({
 					description: patch.description,
 					body: patch.body,
 					tags: patch.tagList && {
-						deleteMany: {},
-						create: patch.tagList.map((t) => ({ tagName: t })),
+						deleteMany: { tagName: { notIn: patch.tagList } },
+						connectOrCreate: patch.tagList.map((t) => ({
+							create: { tagName: t },
+							where: { articleId_tagName: { articleId, tagName: t } },
+						})),
 					},
 				},
 				include: getArticleInclude(user.id),
