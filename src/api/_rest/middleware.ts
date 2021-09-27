@@ -57,7 +57,7 @@ async function getUser(
 	const { SERVER_SECRET } = getEnv();
 
 	try {
-		const verified = verify(token, SERVER_SECRET);
+		const verified = verify(token, SERVER_SECRET, { algorithms: ["HS256"] });
 
 		if (
 			typeof verified !== "object" ||

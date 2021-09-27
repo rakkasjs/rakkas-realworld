@@ -47,6 +47,7 @@ export const post: ConduitRequestHandler = async ({
 	const isCorrect = await compare(password, passwordHash || "");
 
 	const token = sign({ id }, SERVER_SECRET, {
+		algorithm: "HS256",
 		expiresIn: "60 days",
 		noTimestamp: true,
 	});
