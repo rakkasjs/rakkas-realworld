@@ -222,7 +222,7 @@ const CommentCard: FC<{
 				</a>{" "}
 				&nbsp;{" "}
 				<Link
-					href={`/profiles/${encodeURIComponent(comment.author.username)}`}
+					href={`/profile/${encodeURIComponent(comment.author.username)}`}
 					className="comment-author"
 				>
 					{comment.author.username}
