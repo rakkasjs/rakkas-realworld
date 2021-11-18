@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { zodToConduitError } from "lib/zod-to-conduit-error";
 import { ConduitRequestHandler } from "./middleware";
-import { hash } from "bcrypt";
+import { hash } from "bcryptjs";
 import { getEnv } from "lib/env";
 import { z } from "zod";
 import isURL from "validator/lib/isURL";

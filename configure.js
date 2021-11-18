@@ -1,24 +1,67 @@
 const fs = require("fs");
 const path = require("path");
-const { hashSync } = require("bcrypt");
+const { hashSync } = require("bcryptjs");
+const findFreePort = require("find-free-port");
+const url = require("url");
 
-// Find the smallest number of rounds where hashing takes more than 250ms
-let rounds;
-for (rounds = 8; rounds < 30; ++rounds) {
-	const start = process.hrtime();
-	hashSync("topsecret", rounds);
-	const elapsed = process.hrtime(start)[1] / 1_000_000;
-	if (elapsed >= 250) break;
-}
+async function go() {
+	const prod = process.env.NODE_ENV === "production";
 
-const output = `HOST=localhost
-PORT=3000
-DATABASE_URL="file://${path
-	.join(__dirname, "db.sqlite")
-	.split(path.sep)
-	.join(path.posix.sep)}"
-SERVER_SECRET="${require("crypto").randomBytes(48).toString("hex")}"
-SALT_ROUNDS=${rounds}
+	const HOST = process.env.HOST || (prod ? "0.0.0.0" : "localhost");
+	const PORT = prod
+		? await findFreePort(3000)
+		: process.env.PORT || (await findFreePort(3000));
+	const DATABASE_URL =
+		process.env.DATABASE_URL ||
+		(prod
+			? url.pathToFileURL(await getDbFileName())
+			: url.pathToFileURL(path.join(__dirname, "db.sqlite")));
+	const SERVER_SECRET =
+		process.env.SERVER_SECRET ||
+		require("crypto").randomBytes(48).toString("hex");
+	const SALT_ROUNDS =
+		process.env.SALT_ROUNDS || (prod ? calculateSaltRounds() : "8");
+
+	let output = `HOST=${HOST}
+PORT=${PORT}
+DATABASE_URL=${DATABASE_URL}
+SERVER_SECRET=${SERVER_SECRET}
+SALT_ROUNDS=${SALT_ROUNDS}
 `;
 
-fs.promises.writeFile(".env", output, { encoding: "utf-8" });
+	if (prod) output += "TRUST_FORWARDED_ORIGIN=1";
+
+	await fs.promises.writeFile(".env", output, { encoding: "utf-8" });
+}
+
+function calculateSaltRounds() {
+	let rounds;
+	for (rounds = 8; rounds < 30; ++rounds) {
+		const start = process.hrtime();
+		hashSync("topsecret", rounds);
+		const elapsed = process.hrtime(start)[1] / 1_000_000;
+		if (elapsed >= 250) break;
+	}
+
+	return rounds;
+}
+
+async function getDbFileName() {
+	const readline = require("readline");
+
+	const rl = readline.createInterface({
+		input: process.stdin,
+		output: process.stdout,
+	});
+
+	return new Promise((resolve) => {
+		rl.question("Absolute file path for the database? ", (answer) => {
+			resolve(answer);
+			rl.close();
+		});
+	});
+}
+
+go().catch((err) => {
+	console.error(err);
+});

@@ -1,6 +1,6 @@
 import { RequestHandler } from "rakkasjs";
 import { db } from "lib/db";
-import { hash } from "bcrypt";
+import { hash } from "bcryptjs";
 import { getEnv } from "lib/env";
 
 export const post: RequestHandler = async () => {

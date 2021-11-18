@@ -67,7 +67,7 @@ export const Auth: FC<AuthProps> = ({ type, apiUrl, errorMessages }) => {
 											json as { email: string; password: string },
 									  )
 								)
-									.then((user) => {
+									.then(async (user) => {
 										if (!mounted.current) return;
 
 										document.cookie = serialize("authToken", user.token, {
@@ -82,12 +82,14 @@ export const Auth: FC<AuthProps> = ({ type, apiUrl, errorMessages }) => {
 											user,
 										}));
 
-										navigate("/");
+										navigate("/").catch(() => {
+											// Do nothing
+										});
 									})
 									.catch((err: ConduitError) => {
 										if (!mounted.current) return;
 										setSubmitLabel(signup ? "Sign up" : "Sign in");
-										setErrors(err.messages);
+										setErrors(err.messages || ["An error has occured"]);
 									});
 							}}
 						>

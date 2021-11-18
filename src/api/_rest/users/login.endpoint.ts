@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import { compare } from "bcrypt";
+import { compare } from "bcryptjs";
 import { getEnv } from "lib/env";
 import { sign } from "jsonwebtoken";
 import { zodToConduitError } from "lib/zod-to-conduit-error";
