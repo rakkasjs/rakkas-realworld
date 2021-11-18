@@ -6,7 +6,7 @@
 
 This codebase was created to demonstrate a fully fledged fullstack application built with **[Rakkas](https://rakkasjs.org)** including CRUD operations, authentication, routing, pagination, and more.
 
-**Rakkas** is a new framework without established styleguides & best practices as of yet. This project is one of the first step towards establishing them.
+**Rakkas** is a new framework without established style guides & best practices as of yet. This project is one of the first step towards establishing them.
 
 For more information on how this works with other frontends/backends, head over to the [RealWorld](https://github.com/gothinkster/realworld) repo.
 
@@ -86,10 +86,10 @@ Every mutation operation in the REST API has a counterpart in the form API (all 
 ¹ Logging out is carried out on the frontend by simply deleting the authentication cookie.
 
 #### Test API
-The `src/api/test` folder contains a few endpoints intended to be used as testing helpers. `/api/test/ping` responds to `HEAD` requests in order to detect the time the server becomes functional before starting the tests. A `POST` request to `/api/test/reset` resets the database, it is called before starting an integration test. A `POST` request to `/api/test/populate` seeds the database with some test data. A middleware protects these endpoints and only allows them to run when `NODE_ENV` envionment variable is set to `test`.
+The `src/api/test` folder contains a few endpoints intended to be used as testing helpers. `/api/test/ping` responds to `HEAD` requests in order to detect the time the server becomes functional before starting the tests. A `POST` request to `/api/test/reset` resets the database, it is called before starting an integration test. A `POST` request to `/api/test/populate` seeds the database with some test data. A middleware protects these endpoints and only allows them to run when `NODE_ENV` environment variable is set to `test`.
 
 ### Frontend
-The `src/pages` folder contains an implementation of [Conduit Rounting guidelines](https://github.com/gothinkster/realworld/tree/master/spec#routing-guidelines) in the form of a set of Rakkas pages and layouts. There are a few components to avoid repetition and an API client library (in `src/lib/conduit-client.ts`) to facilitate API communication and error handling. Other than that it is a fairly straightforward port of the [original HTML templates](https://github.com/gothinkster/realworld-starter-kit/blob/master/FRONTEND_INSTRUCTIONS.md#layout).
+The `src/pages` folder contains an implementation of [Conduit Routing guidelines](https://github.com/gothinkster/realworld/tree/master/spec#routing-guidelines) in the form of a set of Rakkas pages and layouts. There are a few components to avoid repetition and an API client library (in `src/lib/conduit-client.ts`) to facilitate API communication and error handling. Other than that it is a fairly straightforward port of the [original HTML templates](https://github.com/gothinkster/realworld-starter-kit/blob/master/FRONTEND_INSTRUCTIONS.md#layout).
 
 One small thing that you may find strange is the use of uncontrolled form elements. Since client-side validation is not in the specification, it is actually the easiest way to implement form functionality.
 
@@ -104,11 +104,11 @@ There are three types of tests in **Rakkas RealWorld**:
 | npm run test:api  | API tests        |
 | npm run test:e2e  | End-to-end tests |
 
-Before running the API or end-to-end tests, you have to start a development or production server on `localhost:3000` with `NODE_ENV` envionment variable set to `test`.
+Before running the API or end-to-end tests, you have to start a development or production server on `localhost:3000` with `NODE_ENV` environment variable set to `test`.
 
 `npm test` builds and starts a server and runs all three types of tests back to back. If you're using a `.env` file, you should set it's HOST and PORT to `localhost:3000` before running the tests this way.
 
-Since most of the **Rakkas RealWorld** core consists of either dumb view code copied and pasted from the templates or straitforward calls to some library like `zod` or `prisma`, there are few **unit tests** at the moment. They are located next to the source modules they test.
+Since most of the **Rakkas RealWorld** core consists of either dumb view code copied and pasted from the templates or straightforward calls to some library like `zod` or `prisma`, there are few **unit tests** at the moment. They are located next to the source modules they test.
 
 **API tests** run by sending API requests to a running server and examining the responses. They are quite extensive and test almost every case. They are located in the `api-test` directory.
 
