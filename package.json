@@ -18,7 +18,7 @@
 		"lint:css": "stylelint \"src/**/*.css\"",
 		"format": "prettier . --write",
 		"prepack": "pnpm build",
-		"postinstall": "pnpm configure && pnpm bootstrap"
+		"postinstall": "pnpm bootstrap"
 	},
 	"files": [
 		"configure.js",
