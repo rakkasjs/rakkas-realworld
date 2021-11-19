@@ -148,6 +148,7 @@ describe("Editor", () => {
 
 		// When I click on the Follow John Doe button
 		cy.contains("Follow John Doe").click();
+		cy.contains("Unfollow John Doe");
 
 		// Then I should see the article on my feed
 		cy.contains("Home").click();
@@ -156,6 +157,7 @@ describe("Editor", () => {
 		// When I go back and click on the favorite button
 		cy.go("back");
 		cy.contains("Favorite Article").click();
+		cy.contains("Unfavorite Article");
 
 		// Then I should see the article on my favorites page
 		cy.contains("Jane Foo").click();

@@ -84,12 +84,12 @@ describe("Home page", () => {
 		cy.contains("Rosalee Dines's article #0 title");
 	});
 
-	it("favorites articles from the preview", () => {
+	it.only("favorites articles from the preview", () => {
 		registerJohnDoe();
 		cy.visit("/?global");
 		waitForJs();
 		cy.get(".article-preview").first().find("button").click();
-		cy.get(".article-preview").first().find("button").contains("1");
+		cy.get(".article-preview .ion-load-c").should("not.exist");
 
 		cy.visit("/profile/John%20Doe?favorites");
 		waitForJs();

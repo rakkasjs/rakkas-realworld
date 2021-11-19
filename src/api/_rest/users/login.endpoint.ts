@@ -46,12 +46,6 @@ export const post: ConduitRequestHandler = async ({
 
 	const isCorrect = await compare(password, passwordHash || "");
 
-	const token = sign({ id }, SERVER_SECRET, {
-		algorithm: "HS256",
-		expiresIn: "60 days",
-		noTimestamp: true,
-	});
-
 	if (!isCorrect) {
 		return {
 			status: StatusCodes.UNPROCESSABLE_ENTITY,
@@ -62,6 +56,12 @@ export const post: ConduitRequestHandler = async ({
 			},
 		};
 	}
+
+	const token = sign({ id }, SERVER_SECRET, {
+		algorithm: "HS256",
+		expiresIn: "60 days",
+		noTimestamp: true,
+	});
 
 	return {
 		body: { user: { ...user, token } },
