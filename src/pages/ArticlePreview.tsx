@@ -5,9 +5,13 @@ import { FavoriteButton } from "lib/FavoriteButton";
 
 export interface ArticlePreviewProps {
 	article: Article;
+	onChange(article: Article): void;
 }
 
-export const ArticlePreview: FC<ArticlePreviewProps> = ({ article }) => (
+export const ArticlePreview: FC<ArticlePreviewProps> = ({
+	article,
+	onChange,
+}) => (
 	<div className="article-preview">
 		<div className="article-meta">
 			<Link href={`/profile/${encodeURIComponent(article.author.username)}`}>
@@ -28,7 +32,12 @@ export const ArticlePreview: FC<ArticlePreviewProps> = ({ article }) => (
 					}).format(new Date(article.createdAt))}
 				</span>
 			</div>
-			<FavoriteButton article={article} minimal style={{ float: "right" }} />
+			<FavoriteButton
+				article={article}
+				minimal
+				style={{ float: "right" }}
+				onChange={onChange}
+			/>
 		</div>
 		<Link
 			href={`/article/${encodeURIComponent(article.slug)}`}

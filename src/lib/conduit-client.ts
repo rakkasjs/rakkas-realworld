@@ -210,23 +210,27 @@ export async function getArticles(
 export async function favorite(
 	ctx: ConduitRequestContext,
 	slug: string,
-): Promise<void> {
-	await makeRequest(
+): Promise<Article> {
+	const result = (await makeRequest(
 		ctx,
 		`/articles/${encodeURIComponent(slug)}/favorite`,
 		"POST",
-	);
+	)) as SingleArticleResponse;
+
+	return result.article;
 }
 
 export async function unfavorite(
 	ctx: ConduitRequestContext,
 	slug: string,
-): Promise<void> {
-	await makeRequest(
+): Promise<Article> {
+	const result = (await makeRequest(
 		ctx,
 		`/articles/${encodeURIComponent(slug)}/favorite`,
 		"DELETE",
-	);
+	)) as SingleArticleResponse;
+
+	return result.article;
 }
 
 export async function createArticle(

@@ -93,7 +93,7 @@ export const ArticleView: FC<ArticleViewProps> = ({
 					&nbsp;&nbsp;
 					<FavoriteButton
 						article={article}
-						onComplete={() =>
+						onChange={() =>
 							setArticle((old) => ({
 								...old,
 								favorited: !old.favorited,

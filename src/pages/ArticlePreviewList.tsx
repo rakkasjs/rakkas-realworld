@@ -15,6 +15,7 @@ export const ArticlePreviewList: FC<ArticlePreviewListProps> = ({
 	articlesCount: originalArticlesCount,
 	articles: originalArticles,
 	page,
+	removeWhenUnfavorited,
 }) => {
 	const [{ articles, articlesCount }, setCachedData] = useState({
 		articles: originalArticles,
@@ -37,7 +38,27 @@ export const ArticlePreviewList: FC<ArticlePreviewListProps> = ({
 			)}
 
 			{articles.map((article) => (
-				<ArticlePreview key={article.slug} article={article} />
+				<ArticlePreview
+					key={article.slug}
+					article={article}
+					onChange={(newArticle) => {
+						if (removeWhenUnfavorited && !newArticle.favorited) {
+							setCachedData((old) => ({
+								articles: old.articles.filter(
+									(a) => a.slug !== newArticle.slug,
+								),
+								articlesCount: old.articlesCount - 1,
+							}));
+						} else {
+							setCachedData((old) => ({
+								...old,
+								articles: old.articles.map((a) =>
+									a.slug === article.slug ? newArticle : a,
+								),
+							}));
+						}
+					}}
+				/>
 			))}
 
 			<Pagination

@@ -7,7 +7,7 @@ import React, { CSSProperties, FC, useContext } from "react";
 
 export interface FavoriteButtonProps {
 	article: Article;
-	onComplete?(): void;
+	onChange?(article: Article): void;
 	minimal?: boolean;
 	style?: CSSProperties;
 }
@@ -16,7 +16,7 @@ export const FavoriteButton: FC<FavoriteButtonProps> = ({
 	article,
 	minimal,
 	style,
-	onComplete,
+	onChange,
 }) => {
 	const ctx = useContext(ConduitContext);
 	const { user } = ctx;
@@ -68,10 +68,10 @@ export const FavoriteButton: FC<FavoriteButtonProps> = ({
 			size="small"
 			outline={!article.favorited}
 			onClick={async () => {
-				await (article.favorited
+				const newArticle = await (article.favorited
 					? unfavorite(ctx, article.slug)
 					: favorite(ctx, article.slug));
-				onComplete?.();
+				onChange?.(newArticle);
 			}}
 		/>
 	) : (
