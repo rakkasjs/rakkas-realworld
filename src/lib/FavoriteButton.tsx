@@ -60,7 +60,7 @@ export const FavoriteButton: FC<FavoriteButtonProps> = ({
 							)}{" "}
 						</>
 					)}
-					<span className="counter">({article.favoritesCount - 1})</span>
+					<span className="counter">({article.favoritesCount})</span>
 				</>
 			}
 			icon="heart"
