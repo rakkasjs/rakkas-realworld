@@ -14,12 +14,11 @@ describe("Signu up page", () => {
 		cy.visit("/");
 		waitForJs();
 
-		cy.get("a").contains("Sign in").click();
-
-		cy.title().should("eq", "Sign in — Conduit");
-
 		registerJohnDoe();
-		cy.clearCookies();
+		cy.window().invoke("conduitLogout");
+
+		cy.get("a").contains("Sign in").click();
+		cy.title().should("eq", "Sign in — Conduit");
 
 		cy.get("[placeholder='Email']").type("john.doe@example.com");
 		cy.get("[placeholder='Password']").type("topsecret");

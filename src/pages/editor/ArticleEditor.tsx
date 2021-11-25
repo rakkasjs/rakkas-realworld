@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import { Article, NewArticle } from "lib/api-types";
-import { ConduitError } from "lib/conduit-client";
+import { Article, NewArticle } from "lib/interfaces";
+import { ConduitError } from "lib/conduit-error";
 import { useRouter } from "rakkasjs";
 import { ActionButton } from "lib/ActionButton";
 

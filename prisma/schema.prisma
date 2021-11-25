@@ -7,7 +7,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["dataProxy"]
 }
 
 model User {
@@ -59,7 +60,7 @@ model Comment {
   articleId Int
   authorId  Int
 
-  article Article @relation(fields: [articleId], references: [id])
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
   author  User    @relation(fields: [authorId], references: [id])
 
   @@index([createdAt])
@@ -67,7 +68,7 @@ model Comment {
 }
 
 model ArticleTags {
-  article Article @relation(fields: [articleId], references: [id])
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 
   articleId Int
   tagName   String

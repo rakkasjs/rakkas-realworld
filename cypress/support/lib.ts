@@ -1,8 +1,4 @@
-import {
-	NewArticle,
-	SingleArticleResponse,
-	UserResponse,
-} from "../../src/lib/api-types";
+import { Article, NewArticle, User } from "../../src/lib/interfaces";
 
 export function resetDb(): void {
 	cy.request({
@@ -17,7 +13,7 @@ export function registerUser(user: {
 	password: string;
 }): Cypress.Chainable<string> {
 	return cy
-		.request<UserResponse>({
+		.request<{ user: User }>({
 			url: "/api/users",
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -25,7 +21,8 @@ export function registerUser(user: {
 		})
 		.then((r) => {
 			return cy
-				.setCookie("authToken", r.body.user.token)
+				.window()
+				.invoke("conduitLogin", r.body.user)
 				.then(() => r.body.user.token);
 		});
 }
@@ -35,7 +32,7 @@ export function login(user: {
 	password: string;
 }): Cypress.Chainable<string> {
 	return cy
-		.request<UserResponse>({
+		.request<{ user: User }>({
 			url: "/api/users/login",
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -66,7 +63,7 @@ export function loginAsJohnDoe(): Cypress.Chainable<string> {
 export function createArticle(
 	article: NewArticle,
 	token: string,
-): Cypress.Chainable<Cypress.Response<SingleArticleResponse>> {
+): Cypress.Chainable<Cypress.Response<{ article: Article }>> {
 	return cy.request({
 		url: "/api/articles",
 		method: "POST",

@@ -1,11 +1,4 @@
-import {
-	Article,
-	Comment,
-	CommentResponse,
-	MultipleCommentsResponse,
-	SingleArticleResponse,
-	User,
-} from "lib/api-types";
+import { Article, Comment, User } from "lib/interfaces";
 import {
 	apiCall,
 	registerJaneFoo,
@@ -24,7 +17,7 @@ describe("Delete Comment API", () => {
 
 		john = await registerJohnDoe();
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: "/api/articles",
 			method: "POST",
 			token: john.token,
@@ -46,7 +39,7 @@ describe("Delete Comment API", () => {
 		article = r.data.article;
 
 		jane = await registerJaneFoo();
-		const r2 = await apiCall<CommentResponse>({
+		const r2 = await apiCall<{ comment: Comment }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/comments`,
 			method: "POST",
 			token: jane.token,
@@ -62,7 +55,7 @@ describe("Delete Comment API", () => {
 	});
 
 	it("deletes comment", async () => {
-		const r = await apiCall<MultipleCommentsResponse>({
+		const r = await apiCall<{ comments: Comment[] }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/comments/${
 				comment.id
 			}`,
@@ -72,7 +65,7 @@ describe("Delete Comment API", () => {
 
 		expect(r.status).toBe(200);
 
-		const r2 = await apiCall<MultipleCommentsResponse>({
+		const r2 = await apiCall<{ comments: Comment[] }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/comments`,
 		});
 
@@ -81,7 +74,7 @@ describe("Delete Comment API", () => {
 	});
 
 	it("rejects unauthenticated", async () => {
-		const r = await apiCall<CommentResponse>({
+		const r = await apiCall<{ comment: Comment }>({
 			url: `/api/articles/${article.slug}/comments/${comment.id}`,
 			method: "DELETE",
 		});
@@ -89,7 +82,7 @@ describe("Delete Comment API", () => {
 	});
 
 	it("rejects other users", async () => {
-		const r = await apiCall<CommentResponse>({
+		const r = await apiCall<{ comment: Comment }>({
 			url: `/api/articles/${article.slug}/comments/${comment.id}`,
 			method: "DELETE",
 			token: john.token,
@@ -98,7 +91,7 @@ describe("Delete Comment API", () => {
 	});
 
 	it("rejects non-existent-slug", async () => {
-		const r = await apiCall<CommentResponse>({
+		const r = await apiCall<{ comment: Comment }>({
 			url: `/api/articles/non-existent-1234/comments/${comment.id}`,
 			method: "DELETE",
 			token: john.token,
@@ -107,7 +100,7 @@ describe("Delete Comment API", () => {
 	});
 
 	it("rejects non-existent comment ID", async () => {
-		const r = await apiCall<CommentResponse>({
+		const r = await apiCall<{ comment: Comment }>({
 			url: `/api/articles/${article.slug}/comments/1234`,
 			method: "DELETE",
 			token: jane.token,

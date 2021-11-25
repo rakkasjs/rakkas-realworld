@@ -1,11 +1,4 @@
-import {
-	Article,
-	Comment,
-	CommentResponse,
-	MultipleCommentsResponse,
-	SingleArticleResponse,
-	User,
-} from "lib/api-types";
+import { Article, Comment, User } from "lib/interfaces";
 import {
 	apiCall,
 	formSubmit,
@@ -25,7 +18,7 @@ describe("Delete Comment API", () => {
 
 		john = await registerJohnDoe();
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: "/api/articles",
 			method: "POST",
 			token: john.token,
@@ -47,7 +40,7 @@ describe("Delete Comment API", () => {
 		article = r.data.article;
 
 		jane = await registerJaneFoo();
-		const r2 = await apiCall<CommentResponse>({
+		const r2 = await apiCall<{ comment: Comment }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/comments`,
 			method: "POST",
 			token: jane.token,
@@ -72,7 +65,7 @@ describe("Delete Comment API", () => {
 
 		expect(location).toBe(`/article/${encodeURIComponent(article.slug)}`);
 
-		const r = await apiCall<MultipleCommentsResponse>({
+		const r = await apiCall<{ comments: Comment[] }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/comments`,
 		});
 

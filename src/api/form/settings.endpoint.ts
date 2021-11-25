@@ -1,18 +1,9 @@
-import {
-	convertResponse,
-	FormSubmitRequestHandler,
-	paramsToObject,
-} from "api/form/middleware";
-import { put as updateUser } from "api/_rest/user.endpoint";
+import { FormSubmitRequestHandler } from "api/form/middleware";
 
-export const post: FormSubmitRequestHandler = async (req) => {
-	return convertResponse(
-		await updateUser({
-			...req,
-			type: "json",
-			body: { user: paramsToObject(req.body) },
-		}),
-		"/settings",
-		"/settings",
-	);
+export const post: FormSubmitRequestHandler = async ({ context, body }) => {
+	context.setRedirects({ success: "/settings", error: "/settings" });
+
+	await context.auth.updateUser(body);
+
+	return {};
 };

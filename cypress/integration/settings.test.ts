@@ -12,9 +12,12 @@ describe("Settings page", () => {
 	beforeEach(() => resetDb());
 
 	it("logs out", () => {
-		registerJohnDoe();
 		cy.visit("/");
 		waitForJs();
+
+		registerJohnDoe();
+
+		cy.visit("/");
 
 		cy.get("a").contains("Settings").click();
 
@@ -25,9 +28,13 @@ describe("Settings page", () => {
 		cy.contains("Sign in");
 	});
 
-	it("updates user info", () => {
+	it.only("updates user info", () => {
+		cy.visit("/");
+
 		registerJohnDoe();
+
 		cy.visit("/settings");
+		cy.log("Visited settings");
 		waitForJs();
 
 		cy.get("[name=image]").clear().type("https://www.cyco130.com/pp.jpeg");
@@ -37,7 +44,6 @@ describe("Settings page", () => {
 		cy.get("[name=password]").clear().type("a new secret");
 
 		cy.contains("Update Settings").click();
-		cy.contains("Updating Settings");
 		cy.contains("Settings Updated");
 		cy.contains("Update Settings");
 

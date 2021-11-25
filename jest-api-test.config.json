@@ -1,6 +1,5 @@
 {
 	"rootDir": "api-test",
-	"setupFilesAfterEnv": ["<rootDir>/jest-setup.ts"],
 	"testTimeout": 600000,
 	"transform": {
 		"^.+\\.(js|jsx|ts|tsx)$": ["esbuild-jest", { "sourceMap": true }],

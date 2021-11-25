@@ -1,9 +1,8 @@
 import { Link, navigate } from "rakkasjs";
 import React, { FC, useContext, useEffect, useState } from "react";
-import { Article, Comment } from "lib/api-types";
+import { Article, Comment } from "lib/interfaces";
 import ReactMarkdown from "react-markdown";
 import { ActionButton } from "lib/ActionButton";
-import { addComment, deleteArticle, deleteComment } from "lib/conduit-client";
 import { ConduitContext } from "lib/ConduitContext";
 import { FavoriteButton } from "lib/FavoriteButton";
 import { FollowButton } from "lib/FollowButton";
@@ -80,7 +79,7 @@ export const ArticleView: FC<ArticleViewProps> = ({
 						outline
 						type="danger"
 						onClick={() =>
-							deleteArticle(ctx, article.slug).then(() => navigate("/"))
+							ctx.conduit.deleteArticle(article.slug).then(() => navigate("/"))
 						}
 					/>
 				</>
@@ -160,8 +159,7 @@ export const ArticleView: FC<ArticleViewProps> = ({
 											const commentBody = textarea.value;
 
 											if (commentBody) {
-												const comment = await addComment(
-													ctx,
+												const comment = await ctx.conduit.addComment(
 													article.slug,
 													commentBody,
 												);
@@ -186,11 +184,13 @@ export const ArticleView: FC<ArticleViewProps> = ({
 								comment={comment}
 								article={article}
 								onDelete={() => {
-									deleteComment(ctx, article.slug, comment.id).then(() =>
-										setComments((old) =>
-											old.filter((c) => c.id !== comment.id),
-										),
-									);
+									ctx.conduit
+										.deleteComment(article.slug, comment.id)
+										.then(() =>
+											setComments((old) =>
+												old.filter((c) => c.id !== comment.id),
+											),
+										);
 								}}
 							/>
 						))}

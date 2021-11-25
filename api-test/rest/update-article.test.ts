@@ -1,4 +1,4 @@
-import { Article, SingleArticleResponse } from "lib/api-types";
+import { Article } from "lib/interfaces";
 import {
 	apiCall,
 	DATE_REGEX,
@@ -17,7 +17,7 @@ describe("Update Article API", () => {
 		const john = await registerJohnDoe();
 		johnsToken = john.token;
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: "/api/articles",
 			method: "POST",
 			token: johnsToken,
@@ -40,7 +40,7 @@ describe("Update Article API", () => {
 	});
 
 	it("updates title", async () => {
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}`,
 			method: "PUT",
 			token: johnsToken,
@@ -56,7 +56,7 @@ describe("Update Article API", () => {
 	});
 
 	it("updates description", async () => {
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}`,
 			method: "PUT",
 			token: johnsToken,
@@ -71,7 +71,7 @@ describe("Update Article API", () => {
 	});
 
 	it("updates body", async () => {
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}`,
 			method: "PUT",
 			token: johnsToken,
@@ -86,7 +86,7 @@ describe("Update Article API", () => {
 	});
 
 	it("updates tags", async () => {
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}`,
 			method: "PUT",
 			token: johnsToken,
@@ -101,7 +101,7 @@ describe("Update Article API", () => {
 	});
 
 	it("rejects unauthenticated", async () => {
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}`,
 			method: "PUT",
 			data: { article: { body: "My updated article body" } },
@@ -111,7 +111,7 @@ describe("Update Article API", () => {
 
 	it("rejects other users", async () => {
 		const jane = await registerJaneFoo();
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}`,
 			method: "PUT",
 			data: { article: { body: "My updated article body" } },
@@ -121,7 +121,7 @@ describe("Update Article API", () => {
 	});
 
 	it("rejects non-existent slug", async () => {
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/invalid-slug-1234}`,
 			method: "PUT",
 			token: johnsToken,

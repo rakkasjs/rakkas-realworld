@@ -1,4 +1,4 @@
-import { UserResponse } from "lib/api-types";
+import { User } from "lib/interfaces";
 import {
 	apiCall,
 	expectUser,
@@ -21,7 +21,7 @@ describe("Update User API", () => {
 	for (const { name, data } of updateInputs) {
 		it(`updates ${name}`, async () => {
 			const { token } = await registerJohnDoe();
-			const r = await apiCall<UserResponse>({
+			const r = await apiCall<{ user: User }>({
 				url: "/api/user",
 				method: "PUT",
 				token,
@@ -44,7 +44,7 @@ describe("Update User API", () => {
 	it("updates password", async () => {
 		async () => {
 			const { token } = await registerJohnDoe();
-			const r = await apiCall<UserResponse>({
+			const r = await apiCall<{ user: User }>({
 				url: "/api/user",
 				method: "PUT",
 				token,
@@ -57,7 +57,7 @@ describe("Update User API", () => {
 			expectUser(r.data?.user);
 
 			// Login with new password
-			const r2 = await apiCall<UserResponse>({
+			const r2 = await apiCall<{ user: User }>({
 				url: "/api/users/login",
 				method: "POST",
 				data: {
@@ -69,7 +69,7 @@ describe("Update User API", () => {
 			expectUser(r2.data?.user);
 
 			// Fails with old password
-			const r3 = await apiCall<UserResponse>({
+			const r3 = await apiCall<{ user: User }>({
 				url: "/api/users/login",
 				method: "POST",
 				data: {
@@ -82,7 +82,7 @@ describe("Update User API", () => {
 	});
 
 	it("rejects unauthenticated", async () => {
-		const r = await apiCall<UserResponse>({
+		const r = await apiCall<{ user: User }>({
 			url: "/api/user",
 			method: "PUT",
 			data: { user: { username: "updated name" } },
@@ -112,7 +112,7 @@ describe("Update User API", () => {
 	for (const { name, data, errors } of invalidInputs) {
 		it(`rejects invalid ${name}`, async () => {
 			const { token } = await registerJohnDoe();
-			const r = await apiCall<UserResponse>({
+			const r = await apiCall<{ user: User }>({
 				url: "/api/user",
 				method: "PUT",
 				token,

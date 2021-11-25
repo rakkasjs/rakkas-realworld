@@ -1,5 +1,5 @@
 import { parse, Cookie } from "set-cookie-parser";
-import { Profile, User, UserResponse } from "lib/api-types";
+import { Profile, User } from "lib/interfaces";
 import nodeFetch, { RequestInit, Response } from "node-fetch";
 import { serialize } from "cookie";
 
@@ -131,16 +131,11 @@ export async function resetDb(): Promise<void> {
 }
 
 export async function registerJohnDoe(): Promise<User> {
-	const r = await apiCall<UserResponse>({
-		url: "/api/users",
+	const r = await apiCall<{ user: User }>({
+		url:
+			"/api/test/create-user?" +
+			new URLSearchParams({ name: "John Doe" }).toString(),
 		method: "POST",
-		data: {
-			user: {
-				username: "John Doe",
-				email: "john.doe@example.com",
-				password: "topsecret",
-			},
-		},
 	});
 
 	if (!r.ok) {
@@ -152,16 +147,11 @@ export async function registerJohnDoe(): Promise<User> {
 }
 
 export async function registerJaneFoo(): Promise<User> {
-	const r = await apiCall<UserResponse>({
-		url: "/api/users",
+	const r = await apiCall<{ user: User }>({
+		url:
+			"/api/test/create-user?" +
+			new URLSearchParams({ name: "Jane Foo" }).toString(),
 		method: "POST",
-		data: {
-			user: {
-				username: "Jane Foo",
-				email: "jane.foo@example.com",
-				password: "nopeeky!",
-			},
-		},
 	});
 
 	if (!r.ok) {
@@ -172,7 +162,6 @@ export async function registerJaneFoo(): Promise<User> {
 	return r.data.user;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function expectUser(subject: any, user?: Partial<User>): void {
 	expect(subject).toMatchObject({
 		email: user?.email ?? "john.doe@example.com",
@@ -188,7 +177,6 @@ export function expectUser(subject: any, user?: Partial<User>): void {
 	expect(subject).not.toHaveProperty("passwordHash");
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function expectProfile(subject: any, profile?: Partial<Profile>): void {
 	expect(subject).toMatchObject({
 		username: profile?.username ?? "John Doe",

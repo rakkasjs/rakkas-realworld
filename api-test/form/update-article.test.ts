@@ -1,4 +1,4 @@
-import { Article, SingleArticleResponse } from "lib/api-types";
+import { Article } from "lib/interfaces";
 import {
 	apiCall,
 	DATE_REGEX,
@@ -18,7 +18,7 @@ describe("Update Article API", () => {
 		const john = await registerJohnDoe();
 		johnsToken = john.token;
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: "/api/articles",
 			method: "POST",
 			token: johnsToken,
@@ -55,7 +55,7 @@ describe("Update Article API", () => {
 		expect(location).toMatch(/^\/article\/my-updated-article-title-/);
 
 		const newSlug = location.slice("/article/".length);
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(newSlug)}`,
 		});
 		expect(r.status).toBe(200);
@@ -81,7 +81,7 @@ describe("Update Article API", () => {
 
 		expect(location).toMatch(new RegExp(`^\\/article\\/${article.slug}`));
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}`,
 		});
 
@@ -107,7 +107,7 @@ describe("Update Article API", () => {
 
 		expect(location).toBe(`/article/${article.slug}`);
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}`,
 		});
 
@@ -133,7 +133,7 @@ describe("Update Article API", () => {
 
 		expect(location).toMatch(new RegExp(`^\\/article\\/${article.slug}`));
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}`,
 		});
 

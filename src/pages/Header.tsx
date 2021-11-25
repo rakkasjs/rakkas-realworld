@@ -1,10 +1,10 @@
 import { Link, NavLink, useRouter } from "rakkasjs";
 import React, { FC } from "react";
 import { Helmet } from "react-helmet-async";
-import { UserResponse } from "lib/api-types";
+import { User } from "lib/interfaces";
 
 interface HeaderProps {
-	user: UserResponse["user"] | null;
+	user?: User;
 }
 
 export const Header: FC<HeaderProps> = ({ user }) => {

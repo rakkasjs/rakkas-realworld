@@ -1,8 +1,4 @@
-import {
-	Article,
-	MultipleCommentsResponse,
-	SingleArticleResponse,
-} from "lib/api-types";
+import { Article, Comment } from "lib/interfaces";
 import {
 	apiCall,
 	DATE_REGEX,
@@ -23,7 +19,7 @@ describe("Add Comments to an Article API", () => {
 		const john = await registerJohnDoe();
 		johnsToken = john.token;
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: "/api/articles",
 			method: "POST",
 			token: johnsToken,
@@ -55,7 +51,7 @@ describe("Add Comments to an Article API", () => {
 
 		expect(location).toBe(`/article/${article.slug}`);
 
-		const r = await apiCall<MultipleCommentsResponse>({
+		const r = await apiCall<{ comments: Comment[] }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/comments`,
 		});
 

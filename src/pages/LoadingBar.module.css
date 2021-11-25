@@ -6,11 +6,11 @@
 	z-index: 100;
 	background: linear-gradient(
 		90deg,
-		rgba(197, 4, 41, 0%) -25%,
-		rgba(197, 4, 41, 25%) 25%,
-		rgba(197, 4, 41, 100%) 50%,
-		rgba(197, 4, 41, 25%) 75%,
-		rgba(197, 4, 41, 0%) 125%
+		rgb(197 4 41 / 0%) -25%,
+		rgb(197 4 41 / 25%) 25%,
+		rgb(197 4 41 / 100%) 50%,
+		rgb(197 4 41 / 25%) 75%,
+		rgb(197 4 41 / 0%) 125%
 	);
 	background-size: 200%;
 	animation: 1.5s ease-in-out infinite alternate progress;

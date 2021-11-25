@@ -1,4 +1,4 @@
-import { Article, SingleArticleResponse } from "lib/api-types";
+import { Article } from "lib/interfaces";
 import { apiCall, registerJohnDoe, resetDb } from "../api-test-helpers";
 
 describe("Get Article API", () => {
@@ -7,7 +7,7 @@ describe("Get Article API", () => {
 	beforeEach(async () => {
 		await resetDb();
 		const { token } = await registerJohnDoe();
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: "/api/articles",
 			method: "POST",
 			token,
@@ -30,7 +30,7 @@ describe("Get Article API", () => {
 	});
 
 	it("gets article", async () => {
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}`,
 		});
 		expect(r.status).toBe(200);
@@ -38,7 +38,7 @@ describe("Get Article API", () => {
 	});
 
 	it("rejects non-existent slug", async () => {
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/invalid-slug-1234}`,
 		});
 		expect(r.status).toBe(404);

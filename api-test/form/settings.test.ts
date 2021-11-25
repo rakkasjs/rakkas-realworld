@@ -1,4 +1,4 @@
-import { User, UserResponse } from "lib/api-types";
+import { User } from "lib/interfaces";
 import {
 	apiCall,
 	expectUser,
@@ -38,7 +38,7 @@ describe("Update User API", () => {
 
 			expect(location).toBe("/settings");
 
-			const r = await apiCall<UserResponse>({
+			const r = await apiCall<{ user: User }>({
 				url: "/api/user",
 				token: john.token,
 			});
@@ -65,7 +65,7 @@ describe("Update User API", () => {
 			expect(location).toBe("/settings");
 
 			// Login with new password
-			const r2 = await apiCall<UserResponse>({
+			const r2 = await apiCall<{ user: User }>({
 				url: "/api/users/login",
 				method: "POST",
 				data: {
@@ -77,7 +77,7 @@ describe("Update User API", () => {
 			expectUser(r2.data?.user);
 
 			// Fails with old password
-			const r3 = await apiCall<UserResponse>({
+			const r3 = await apiCall<{ user: User }>({
 				url: "/api/users/login",
 				method: "POST",
 				data: {

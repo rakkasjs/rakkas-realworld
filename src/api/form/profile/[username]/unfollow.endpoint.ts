@@ -1,19 +1,14 @@
-import { convertResponse, FormSubmitRequestHandler } from "api/form/middleware";
-import { del as unfollow } from "api/_rest/profiles/[username]/follow.endpoint";
+import { FormSubmitRequestHandler } from "api/form/middleware";
+import { url } from "lib/utils";
 
-export const post: FormSubmitRequestHandler = async (req) => {
-	const username = req.params.username;
+export const post: FormSubmitRequestHandler = async ({
+	context,
+	params: { username },
+}) => {
+	const redirect = url`/profile/${username}`;
+	context.setRedirects({ success: redirect, error: redirect });
 
-	return convertResponse(
-		await unfollow({
-			...req,
-			context: {
-				...req.context,
-				username,
-			},
-			type: "json",
-		}),
-		`/profile/${encodeURIComponent(username)}`,
-		`/profile/${encodeURIComponent(username)}`,
-	);
+	await context.conduit.unfollowUser(username);
+
+	return {};
 };

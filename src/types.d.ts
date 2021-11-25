@@ -1,9 +1,13 @@
 import "rakkasjs";
-import { User } from "lib/api-types";
+import { ConduitInterface, User } from "lib/interfaces";
 
 declare module "rakkasjs" {
 	interface RootContext {
-		apiUrl: string;
 		user?: User;
+		test?: boolean;
+	}
+
+	interface LoadHelpers {
+		conduit: ConduitInterface;
 	}
 }

@@ -1,14 +1,9 @@
 import { ConduitRequestHandler } from "./middleware";
 
-export const get: ConduitRequestHandler = async ({ context: { db } }) => {
-	const tags = await db.articleTags.groupBy({
-		by: ["tagName"],
-		_count: { articleId: true },
-		orderBy: { _count: { articleId: "desc" } },
-		take: 20,
-	});
+export const get: ConduitRequestHandler = async ({ context }) => {
+	const tags = await context.conduit.getTags();
 
 	return {
-		body: { tags: tags.map((tag) => tag.tagName) },
+		body: { tags },
 	};
 };

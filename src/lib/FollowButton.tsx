@@ -1,7 +1,6 @@
 import { ActionButton } from "lib/ActionButton";
-import { Profile } from "lib/api-types";
+import { Profile } from "lib/interfaces";
 import { ConduitContext } from "lib/ConduitContext";
-import { followUser, unfollowUser } from "lib/conduit-client";
 import { Link } from "rakkasjs";
 import React, { CSSProperties, FC, useContext } from "react";
 
@@ -42,13 +41,13 @@ export const FollowButton: FC<FollowButtonProps> = ({
 					? "Unfollowing " + author.username
 					: "Follow " + author.username
 			}
-			icon="plus-round"
+			icon={author.following ? "minus-round" : "plus-round"}
 			size="small"
 			outline={!author.following}
 			onClick={async () => {
 				const newAuthor = await (author.following
-					? unfollowUser(ctx, author.username)
-					: followUser(ctx, author.username));
+					? ctx.conduit.unfollowUser(author.username)
+					: ctx.conduit.followUser(author.username));
 
 				onComplete?.(newAuthor);
 			}}

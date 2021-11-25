@@ -1,16 +1,19 @@
 import { serialize } from "cookie";
+import { ConduitError } from "lib/conduit-error";
+import { ConduitContext } from "lib/ConduitContext";
 import { Link, navigate, setRootContext } from "rakkasjs";
-import React, { FC, useEffect, useRef, useState } from "react";
-import { ConduitError, login, register } from "lib/conduit-client";
+import React, { FC, useEffect, useRef, useState, useContext } from "react";
 
 interface AuthProps {
 	type: "signin" | "signup";
-	apiUrl: string;
 	errorMessages: string[];
 }
 
-export const Auth: FC<AuthProps> = ({ type, apiUrl, errorMessages }) => {
+export const Auth: FC<AuthProps> = ({ type, errorMessages }) => {
+	const context = useContext(ConduitContext);
+
 	const mounted = useRef(true);
+
 	useEffect(
 		() => () => {
 			mounted.current = false;
@@ -54,16 +57,14 @@ export const Auth: FC<AuthProps> = ({ type, apiUrl, errorMessages }) => {
 								const json = Object.fromEntries([...fd.entries()]);
 
 								(signup
-									? register(
-											{ apiUrl, fetch },
+									? context.auth.register(
 											json as {
 												username: string;
 												email: string;
 												password: string;
 											},
 									  )
-									: login(
-											{ apiUrl, fetch },
+									: context.auth.login(
 											json as { email: string; password: string },
 									  )
 								)
@@ -76,6 +77,9 @@ export const Auth: FC<AuthProps> = ({ type, apiUrl, errorMessages }) => {
 											sameSite: true,
 											secure: location.protocol === "https",
 										});
+
+										context.auth.token = user.token;
+										context.conduit.token = user.token;
 
 										setRootContext((old) => ({
 											...old,

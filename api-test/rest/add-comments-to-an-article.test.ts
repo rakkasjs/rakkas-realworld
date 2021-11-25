@@ -1,4 +1,4 @@
-import { Article, CommentResponse, SingleArticleResponse } from "lib/api-types";
+import { Article, Comment } from "lib/interfaces";
 import {
 	apiCall,
 	DATE_REGEX,
@@ -18,7 +18,7 @@ describe("Add Comments to an Article API", () => {
 		const john = await registerJohnDoe();
 		johnsToken = john.token;
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: "/api/articles",
 			method: "POST",
 			token: johnsToken,
@@ -42,7 +42,7 @@ describe("Add Comments to an Article API", () => {
 
 	it("adds comment", async () => {
 		const jane = await registerJaneFoo();
-		const r = await apiCall<CommentResponse>({
+		const r = await apiCall<{ comment: Comment }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/comments`,
 			method: "POST",
 			token: jane.token,
@@ -61,7 +61,7 @@ describe("Add Comments to an Article API", () => {
 
 	it("rejects non-existent slug", async () => {
 		const jane = await registerJaneFoo();
-		const r = await apiCall<CommentResponse>({
+		const r = await apiCall<{ comment: Comment }>({
 			url: `/api/articles/non-existent-1234/comments`,
 			method: "POST",
 			token: jane.token,
@@ -71,7 +71,7 @@ describe("Add Comments to an Article API", () => {
 	});
 
 	it("rejects unauthenticated", async () => {
-		const r = await apiCall<CommentResponse>({
+		const r = await apiCall<{ comment: Comment }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/comments`,
 			method: "POST",
 			data: { comment: { body: "Jane's comment" } },

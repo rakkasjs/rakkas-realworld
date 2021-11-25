@@ -1,15 +1,12 @@
 import { StatusCodes } from "http-status-codes";
 import { definePage, DefinePageTypes, navigate } from "rakkasjs";
-import React from "react";
+import React, { useContext } from "react";
 import { Helmet } from "react-helmet-async";
-import { User } from "lib/api-types";
-import { createArticle } from "lib/conduit-client";
 import { ArticleEditor } from "./ArticleEditor";
+import { ConduitContext } from "lib/ConduitContext";
 
 type CreateArticlePageTypes = DefinePageTypes<{
-	data: {
-		user: User;
-	};
+	data: { redirected: boolean };
 }>;
 
 export default definePage<CreateArticlePageTypes>({
@@ -18,13 +15,18 @@ export default definePage<CreateArticlePageTypes>({
 			return {
 				status: StatusCodes.SEE_OTHER,
 				location: "/register",
+				data: { redirected: true },
 			};
 		}
 
-		return { data: { user } };
+		return { data: { redirected: false } };
 	},
 
-	Component: function ArticleEditPage({ context: { apiUrl }, data: { user } }) {
+	Component: function ArticleEditPage({ data }) {
+		const context = useContext(ConduitContext);
+
+		if (data.redirected) return null;
+
 		return (
 			<>
 				<Helmet title="Editor" />
@@ -32,10 +34,7 @@ export default definePage<CreateArticlePageTypes>({
 				<ArticleEditor
 					mode="create"
 					onSubmit={async (article) => {
-						const result = await createArticle(
-							{ apiUrl, fetch, user },
-							article,
-						);
+						const result = await context.conduit.createArticle(article);
 
 						navigate("/article/" + encodeURIComponent(result.slug));
 

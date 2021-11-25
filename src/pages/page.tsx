@@ -1,9 +1,8 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { definePage, NavLink, DefinePageTypes } from "rakkasjs";
-import { ARTICLES_PER_PAGE, getArticles, getTags } from "lib/conduit-client";
 import { ArticlePreviewList } from "./ArticlePreviewList";
-import { Article } from "lib/api-types";
+import { Article } from "lib/interfaces";
 
 type HomePageTypes = DefinePageTypes<{
 	data: {
@@ -14,20 +13,21 @@ type HomePageTypes = DefinePageTypes<{
 }>;
 
 export default definePage<HomePageTypes>({
-	async load({ context: { apiUrl, user }, fetch, url }) {
+	async load({ helpers, url, context: { user } }) {
 		const { tag, page, global } = parseQuery(url);
-
-		const requestContext = { apiUrl, user, fetch };
 
 		const feed = user && !global && !tag;
 
 		const [tags, articlesResponse] = await Promise.all([
-			getTags(requestContext),
-			getArticles(requestContext, {
-				feed: feed || undefined,
-				tag: tag || undefined,
-				offset: page === 1 ? undefined : ARTICLES_PER_PAGE * (page - 1),
-			}),
+			helpers.conduit.getTags(),
+			feed
+				? helpers.conduit.feedArticles({
+						offset: page === 1 ? 0 : 20 * (page - 1),
+				  })
+				: helpers.conduit.listArticles({
+						tag: tag || undefined,
+						offset: page === 1 ? 0 : 20 * (page - 1),
+				  }),
 		]);
 
 		return { data: { tags, ...articlesResponse } };

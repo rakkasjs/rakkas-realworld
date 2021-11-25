@@ -1,4 +1,4 @@
-import { Article, SingleArticleResponse, User } from "lib/api-types";
+import { Article, User } from "lib/interfaces";
 import {
 	apiCall,
 	formSubmit,
@@ -16,7 +16,7 @@ describe("Unfavorite Article", () => {
 
 		john = await registerJohnDoe();
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: "/api/articles",
 			method: "POST",
 			token: john.token,
@@ -40,7 +40,7 @@ describe("Unfavorite Article", () => {
 
 	it("unfavorites article", async () => {
 		const jane = await registerJaneFoo();
-		await apiCall<SingleArticleResponse>({
+		await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/favorite`,
 			method: "POST",
 			token: jane.token,
@@ -54,7 +54,7 @@ describe("Unfavorite Article", () => {
 
 		expect(location).toBe("/some-weird-address");
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}`,
 			token: jane.token,
 		});
@@ -74,7 +74,7 @@ describe("Unfavorite Article", () => {
 
 		expect(location).toBe("/some-weird-address");
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}`,
 			token: jane.token,
 		});
@@ -101,7 +101,7 @@ describe("Unfavorite Article", () => {
 
 		expect(location).toBe("/some-weird-address");
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}`,
 			token: john.token,
 		});

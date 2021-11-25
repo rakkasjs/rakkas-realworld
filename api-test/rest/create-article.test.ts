@@ -1,4 +1,4 @@
-import { SingleArticleResponse } from "lib/api-types";
+import { Article } from "lib/interfaces";
 import {
 	apiCall,
 	DATE_REGEX,
@@ -19,7 +19,7 @@ describe("Create Article API", () => {
 
 	it("creates an article", async () => {
 		const { token } = await registerJohnDoe();
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: "/api/articles",
 			method: "POST",
 			token,
@@ -42,7 +42,7 @@ describe("Create Article API", () => {
 	});
 
 	it("rejects aunauthenticated", async () => {
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: "/api/articles",
 			method: "POST",
 			data: { article },
@@ -55,7 +55,7 @@ describe("Create Article API", () => {
 	for (const prop of props) {
 		it(`rejects empty ${prop}`, async () => {
 			const { token } = await registerJohnDoe();
-			const r = await apiCall<SingleArticleResponse>({
+			const r = await apiCall<{ article: Article }>({
 				url: "/api/articles",
 				method: "POST",
 				data: { article: { ...article, [prop]: "" } },

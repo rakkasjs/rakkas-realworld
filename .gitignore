@@ -1,5 +1,7 @@
 node_modules
 dist
 *.local
+*.local.*
 .env
 db.sqlite*
+cloudflare

@@ -1,4 +1,4 @@
-import { Article, SingleArticleResponse, User } from "lib/api-types";
+import { Article, User } from "lib/interfaces";
 import {
 	apiCall,
 	registerJaneFoo,
@@ -15,7 +15,7 @@ describe("Favorite Article API", () => {
 
 		john = await registerJohnDoe();
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: "/api/articles",
 			method: "POST",
 			token: john.token,
@@ -39,7 +39,7 @@ describe("Favorite Article API", () => {
 
 	it("favorites article", async () => {
 		const jane = await registerJaneFoo();
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/favorite`,
 			method: "POST",
 			token: jane.token,
@@ -56,13 +56,13 @@ describe("Favorite Article API", () => {
 	it("allow favoriting twice", async () => {
 		const jane = await registerJaneFoo();
 
-		await apiCall<SingleArticleResponse>({
+		await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/favorite`,
 			method: "POST",
 			token: jane.token,
 		});
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/favorite`,
 			method: "POST",
 			token: jane.token,
@@ -77,7 +77,7 @@ describe("Favorite Article API", () => {
 	});
 
 	it("rejects unauthenticated", async () => {
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/favorite`,
 			method: "POST",
 		});
@@ -86,7 +86,7 @@ describe("Favorite Article API", () => {
 	});
 
 	it("rejects favoriting one's own article", async () => {
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/favorite`,
 			method: "POST",
 			token: john.token,
@@ -97,7 +97,7 @@ describe("Favorite Article API", () => {
 
 	it("rejects non-existent", async () => {
 		const jane = await registerJaneFoo();
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/non-existent-1234/favorite`,
 			method: "POST",
 			token: jane.token,

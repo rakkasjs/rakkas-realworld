@@ -1,4 +1,4 @@
-import { ProfileResponse } from "lib/conduit-client";
+import { Profile } from "lib/interfaces";
 import {
 	apiCall,
 	expectProfile,
@@ -10,7 +10,7 @@ describe("Get Profile API", () => {
 	it("gets profile", async () => {
 		await resetDb();
 		await registerJohnDoe();
-		const r = await apiCall<ProfileResponse>({
+		const r = await apiCall<{ profile: Profile }>({
 			url: "/api/profiles/John%20Doe",
 		});
 		expect(r.status).toBe(200);

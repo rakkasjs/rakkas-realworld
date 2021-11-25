@@ -1,4 +1,4 @@
-import { ProfileResponse } from "lib/conduit-client";
+import { Profile } from "lib/interfaces";
 import {
 	apiCall,
 	expectProfile,
@@ -26,7 +26,7 @@ describe("Follow User API", () => {
 
 		expect(location).toBe("/profile/John%20Doe");
 
-		const r = await apiCall<ProfileResponse>({
+		const r = await apiCall<{ profile: Profile }>({
 			url: "/api/profiles/John%20Doe",
 			token: janesToken,
 		});
@@ -36,7 +36,7 @@ describe("Follow User API", () => {
 	});
 
 	it("follows already followed user", async () => {
-		await apiCall<ProfileResponse>({
+		await apiCall<{ profile: Profile }>({
 			url: "/api/profiles/John%20Doe/follow",
 			method: "POST",
 			token: janesToken,
@@ -49,7 +49,7 @@ describe("Follow User API", () => {
 
 		expect(location).toBe("/profile/John%20Doe");
 
-		const r2 = await apiCall<ProfileResponse>({
+		const r2 = await apiCall<{ profile: Profile }>({
 			url: "/api/profiles/John%20Doe/follow",
 			method: "DELETE",
 			token: janesToken,

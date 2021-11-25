@@ -1,4 +1,4 @@
-import { ProfileResponse } from "lib/conduit-client";
+import { Profile } from "lib/interfaces";
 import {
 	apiCall,
 	expectProfile,
@@ -19,7 +19,7 @@ describe("Unfollow User API", () => {
 	});
 
 	it("unfollows followed profile", async () => {
-		await apiCall<ProfileResponse>({
+		await apiCall<{ profile: Profile }>({
 			url: "/api/profiles/John%20Doe/follow",
 			method: "POST",
 			token: janesToken,
@@ -32,7 +32,7 @@ describe("Unfollow User API", () => {
 
 		expect(location).toBe("/profile/John%20Doe");
 
-		const r = await apiCall<ProfileResponse>({
+		const r = await apiCall<{ profile: Profile }>({
 			url: "/api/profiles/John%20Doe",
 			token: janesToken,
 		});
@@ -49,7 +49,7 @@ describe("Unfollow User API", () => {
 
 		expect(location).toBe("/profile/John%20Doe");
 
-		const r = await apiCall<ProfileResponse>({
+		const r = await apiCall<{ profile: Profile }>({
 			url: "/api/profiles/John%20Doe",
 			token: janesToken,
 		});

@@ -1,4 +1,4 @@
-import { Article, SingleArticleResponse, User } from "lib/api-types";
+import { Article, User } from "lib/interfaces";
 import {
 	apiCall,
 	registerJaneFoo,
@@ -15,7 +15,7 @@ describe("Unfavorite Article API", () => {
 
 		john = await registerJohnDoe();
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: "/api/articles",
 			method: "POST",
 			token: john.token,
@@ -39,13 +39,13 @@ describe("Unfavorite Article API", () => {
 
 	it("unfavorites article", async () => {
 		const jane = await registerJaneFoo();
-		await apiCall<SingleArticleResponse>({
+		await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/favorite`,
 			method: "POST",
 			token: jane.token,
 		});
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/favorite`,
 			method: "DELETE",
 			token: jane.token,
@@ -58,7 +58,7 @@ describe("Unfavorite Article API", () => {
 	it("allow unfavoriting even if not favorited", async () => {
 		const jane = await registerJaneFoo();
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/favorite`,
 			method: "DELETE",
 			token: jane.token,
@@ -69,7 +69,7 @@ describe("Unfavorite Article API", () => {
 	});
 
 	it("rejects unauthenticated", async () => {
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/favorite`,
 			method: "DELETE",
 		});
@@ -78,7 +78,7 @@ describe("Unfavorite Article API", () => {
 	});
 
 	it("allows unfavoriting one's own article", async () => {
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/favorite`,
 			method: "DELETE",
 			token: john.token,
@@ -89,7 +89,7 @@ describe("Unfavorite Article API", () => {
 
 	it("rejects non-existent", async () => {
 		const jane = await registerJaneFoo();
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/non-existent-1234/favorite`,
 			method: "DELETE",
 			token: jane.token,

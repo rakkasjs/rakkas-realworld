@@ -6,7 +6,7 @@ describe("Profile page", () => {
 		cy.request({ url: "/api/test/populate", method: "POST" });
 	});
 
-	it.only("shows profile pages", () => {
+	it("shows profile pages", () => {
 		// When I login as Donetta
 		login({
 			email: "donnetta.peterkin@example.com",

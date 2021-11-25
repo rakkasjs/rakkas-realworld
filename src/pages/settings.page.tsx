@@ -1,33 +1,35 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
 	definePage,
 	DefinePageTypes,
 	navigate,
 	setRootContext,
 } from "rakkasjs";
-import { ConduitError, updateUser } from "lib/conduit-client";
 import { StatusCodes } from "http-status-codes";
-import { User } from "lib/api-types";
+import { User } from "lib/interfaces";
 import { serialize } from "cookie";
 import { Helmet } from "react-helmet-async";
 import { ActionButton } from "lib/ActionButton";
+import { ConduitContext } from "lib/ConduitContext";
+import { ConduitError } from "lib/conduit-error";
 
 type SettingsPageTypes = DefinePageTypes<{
-	data: User;
+	data: User | undefined;
 }>;
 
 export default definePage<SettingsPageTypes>({
-	load({ context: { user } }) {
+	async load({ context: { user }, helpers }) {
 		if (!user)
 			return {
 				status: StatusCodes.SEE_OTHER,
 				location: "/register",
+				data: undefined,
 			};
 
-		return { data: user };
+		return { data: await helpers.conduit.getCurrentUser() };
 	},
 
-	Component: function SettingsPage({ context: { apiUrl }, data: user, url }) {
+	Component: function SettingsPage({ data: user, url }) {
 		const mounted = useRef(true);
 		const form = useRef<HTMLFormElement>(null);
 
@@ -38,9 +40,13 @@ export default definePage<SettingsPageTypes>({
 			[],
 		);
 
+		const ctx = useContext(ConduitContext);
+
 		const [errors, setErrors] = useState<string[]>(
 			url.searchParams.getAll("error"),
 		);
+
+		if (!user) return null;
 
 		return (
 			<div className="settings-page">
@@ -126,16 +132,15 @@ export default definePage<SettingsPageTypes>({
 											const json = Object.fromEntries([...fd.entries()]);
 											if (!json.password) delete json.password;
 
-											const updated = await updateUser(
-												{ apiUrl, fetch, user },
-												json,
-											).catch((err) => {
-												if (err instanceof ConduitError) {
-													setErrors(err.messages);
-												}
+											const updated = await ctx.auth
+												.updateUser(json)
+												.catch((err) => {
+													if (err instanceof ConduitError) {
+														setErrors(err.messages);
+													}
 
-												throw err;
-											});
+													throw err;
+												});
 
 											if (!mounted.current) return;
 

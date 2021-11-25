@@ -1,7 +1,11 @@
-import { ConduitRequestContext } from "lib/conduit-client";
+import { User } from "lib/interfaces";
+import { ConduitAuthClient, ConduitClient } from "lib/rest-client";
 import { createContext } from "react";
 
-export const ConduitContext = createContext<ConduitRequestContext>({
-	apiUrl: "/api",
-	fetch,
-});
+export interface ConduitContext {
+	auth: ConduitAuthClient;
+	conduit: ConduitClient;
+	user?: User;
+}
+
+export const ConduitContext = createContext<ConduitContext>(null as any);

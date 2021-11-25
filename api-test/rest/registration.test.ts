@@ -1,4 +1,4 @@
-import { UserResponse } from "lib/api-types";
+import { User } from "lib/interfaces";
 import {
 	apiCall,
 	expectUser,
@@ -10,7 +10,7 @@ describe("Registration API", () => {
 	beforeEach(() => resetDb());
 
 	it("registers user", async () => {
-		const r = await apiCall<UserResponse>({
+		const r = await apiCall<{ user: User }>({
 			url: "/api/users",
 			method: "POST",
 			data: {
@@ -30,7 +30,7 @@ describe("Registration API", () => {
 		beforeEach(() => registerJohnDoe());
 
 		it("user name", async () => {
-			const r = await apiCall<UserResponse>({
+			const r = await apiCall<{ user: User }>({
 				url: "/api/users",
 				method: "POST",
 				data: {
@@ -49,7 +49,7 @@ describe("Registration API", () => {
 		});
 
 		it("e-mail address", async () => {
-			const r = await apiCall<UserResponse>({
+			const r = await apiCall<{ user: User }>({
 				url: "/api/users",
 				method: "POST",
 				data: {
@@ -68,7 +68,7 @@ describe("Registration API", () => {
 		});
 
 		it("user name and e-mail address", async () => {
-			const r = await apiCall<UserResponse>({
+			const r = await apiCall<{ user: User }>({
 				url: "/api/users",
 				method: "POST",
 				data: {
@@ -136,7 +136,7 @@ describe("Registration API", () => {
 
 		inputs.forEach((input) => {
 			it(input.name, async () => {
-				const r = await apiCall<UserResponse>({
+				const r = await apiCall<{ user: User }>({
 					url: "/api/users",
 					method: "POST",
 					data: input.data,

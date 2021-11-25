@@ -1,15 +1,20 @@
 import { RakkasMiddleware, RakkasRequest, RakkasResponse } from "rakkasjs";
 import { StatusCodes } from "http-status-codes";
-import { verify } from "jsonwebtoken";
-import { db } from "lib/db";
 import { getEnv } from "lib/env";
-import { PrismaClient, User } from "@prisma/client";
+import { ConduitAuthInterface, ConduitInterface } from "lib/interfaces";
+import { ConduitAuthService } from "lib/auth-service";
+import { ConduitAuthClient } from "lib/rest-client";
+import { ConduitService, verifyToken } from "lib/conduit-services";
+import { ZodError } from "zod";
+import { zodToConduitError } from "lib/zod-to-conduit-error";
+import { ConduitError } from "lib/conduit-error";
+import { makeLazyValue } from "lib/utils";
 
-export type ConduitRequest = RakkasRequest & {
+export type ConduitRequest = Omit<RakkasRequest, "context"> & {
 	context: {
-		db: PrismaClient;
-		token?: string;
-		user?: User;
+		hasToken: boolean;
+		auth: ConduitAuthInterface;
+		conduit: ConduitInterface;
 	};
 };
 
@@ -20,20 +25,45 @@ export type ConduitRequestHandler = (
 const conduitMiddleware: RakkasMiddleware = async (request, next) => {
 	if (request.type !== "empty" && request.type !== "json") {
 		return {
-			status: StatusCodes.NOT_ACCEPTABLE,
+			status: StatusCodes.UNSUPPORTED_MEDIA_TYPE,
 			body: { errors: { body: ["should be JSON"] } },
 		};
 	}
 
+	let token = request.headers.get("authorization") || undefined;
+	if (token) token = token.slice("Token ".length);
+
+	const { AUTH_API_URL = request.url.origin + "/api" } = getEnv();
+
+	const boundFetch: typeof fetch = (...args) => fetch(...args);
+
 	const conduitRequest: ConduitRequest = {
 		...request,
 		context: {
-			db,
-			...(await getUser(request)),
+			hasToken: !!token,
+			auth:
+				AUTH_API_URL === request.url.origin + "/api"
+					? new ConduitAuthService(makeLazyValue(() => verifyToken(token)))
+					: new ConduitAuthClient(boundFetch, AUTH_API_URL, token),
+			conduit: new ConduitService(makeLazyValue(() => verifyToken(token))),
 		},
 	};
 
-	const response = await next(conduitRequest);
+	const response: RakkasResponse = await next(conduitRequest).catch((error) => {
+		if (error instanceof ZodError) {
+			return {
+				status: StatusCodes.UNPROCESSABLE_ENTITY,
+				body: { errors: zodToConduitError(error) },
+			};
+		} else if (error instanceof ConduitError) {
+			return {
+				status: error.status,
+				body: { errors: error.issues },
+			};
+		}
+
+		throw error;
+	});
 
 	return {
 		...response,
@@ -42,41 +72,3 @@ const conduitMiddleware: RakkasMiddleware = async (request, next) => {
 };
 
 export default conduitMiddleware;
-
-async function getUser(
-	request: RakkasRequest,
-): Promise<{ user: User; token: string } | null> {
-	const auth = request.headers.get("authorization");
-
-	if (!auth || !auth.startsWith("Token ")) {
-		return null;
-	}
-
-	const token = auth.slice("Token ".length);
-
-	const { SERVER_SECRET } = getEnv();
-
-	try {
-		const verified = verify(token, SERVER_SECRET, { algorithms: ["HS256"] });
-
-		if (
-			typeof verified !== "object" ||
-			!verified ||
-			!Number.isInteger(verified.id)
-		) {
-			return null;
-		}
-
-		const id: number = verified.id;
-
-		const user = await db.user.findUnique({
-			where: { id },
-		});
-
-		if (!user) return null;
-
-		return { user, token };
-	} catch (err) {
-		return null;
-	}
-}

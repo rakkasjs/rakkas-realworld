@@ -84,8 +84,10 @@ describe("Home page", () => {
 		cy.contains("Rosalee Dines's article #0 title");
 	});
 
-	it.only("favorites articles from the preview", () => {
+	it("favorites articles from the preview", () => {
+		cy.visit("/");
 		registerJohnDoe();
+
 		cy.visit("/?global");
 		waitForJs();
 		cy.get(".article-preview").first().find("button").click();

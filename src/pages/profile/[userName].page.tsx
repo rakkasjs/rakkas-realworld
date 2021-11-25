@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { definePage, NavLink, DefinePageTypes } from "rakkasjs";
-import { getArticles, getProfile } from "lib/conduit-client";
 import { ArticlePreviewList } from "../ArticlePreviewList";
-import { Profile, Article } from "lib/api-types";
+import { Profile, Article } from "lib/interfaces";
 import { FollowButton } from "lib/FollowButton";
 import { Helmet } from "react-helmet-async";
 
@@ -12,13 +11,12 @@ type ProfilePageTypes = DefinePageTypes<{
 }>;
 
 export default definePage<ProfilePageTypes>({
-	async load({ url, fetch, context: { apiUrl, user }, params: { userName } }) {
+	async load({ url, helpers, params: { userName } }) {
 		const { page, favorites } = parseQuery(url);
-		const requestContext = { apiUrl, fetch, user };
 
 		const [profile, articles] = await Promise.all([
-			getProfile(requestContext, userName),
-			getArticles(requestContext, {
+			helpers.conduit.getProfile(userName),
+			helpers.conduit.listArticles({
 				offset: page === 1 ? undefined : ARTICLES_PER_PAGE * (page - 1),
 				author: favorites ? undefined : userName,
 				favorited: favorites ? userName : undefined,

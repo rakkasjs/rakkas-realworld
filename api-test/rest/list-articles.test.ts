@@ -1,56 +1,34 @@
-import { SingleArticleResponse } from "lib/api-types";
-import { ArticlesResponse } from "lib/conduit-client";
+import { ArticleList, User } from "lib/interfaces";
 import {
 	apiCall,
 	DATE_REGEX,
 	expectProfile,
-	registerJaneFoo,
-	registerJohnDoe,
 	resetDb,
 } from "../api-test-helpers";
 
 describe("List Articles API", () => {
-	let johnsToken: string;
 	let janesToken: string;
-	const slugs: string[] = [];
+	let slugs: string[];
 
 	beforeAll(async () => {
 		await resetDb();
 
-		const john = await registerJohnDoe();
-		const jane = await registerJaneFoo();
+		const r = await apiCall<{ john: User; jane: User; slugs: string[] }>({
+			url: "/api/test/populate-2",
+			method: "POST",
+		});
 
-		johnsToken = john.token;
-		janesToken = jane.token;
-
-		// Create 50 articles, 25 by each user
-		for (let i = 0; i < 50; i++) {
-			const user = i < 25 ? "John" : "Jane";
-			const r = await apiCall<SingleArticleResponse>({
-				url: "/api/articles",
-				method: "POST",
-				token: i < 25 ? johnsToken : janesToken,
-				data: {
-					article: {
-						title: `${user}'s article #${i} title`,
-						description: `${user}'s article #${i} description`,
-						body: `${user}'s article #${i} body`,
-						tagList: [user, `x${Math.floor(i / 10)}`, `y${i % 10}`],
-					},
-				},
-			});
-
-			if (!r.ok) {
-				console.error(r.status, r.error);
-				throw new Error("Could not create article");
-			}
-
-			slugs[i] = r.data.article.slug;
+		if (!r.ok) {
+			console.error(r.status, r.error);
+			throw new Error("Could not populate database");
 		}
+
+		slugs = r.data.slugs;
+		janesToken = r.data.jane.token;
 	});
 
 	it("lists last 20 articles", async () => {
-		const r = await apiCall<ArticlesResponse>({ url: "/api/articles" });
+		const r = await apiCall<ArticleList>({ url: "/api/articles" });
 
 		expect(r.status).toBe(200);
 
@@ -76,7 +54,7 @@ describe("List Articles API", () => {
 	});
 
 	it("honors limit parameter", async () => {
-		const r = await apiCall<ArticlesResponse>({
+		const r = await apiCall<ArticleList>({
 			url: "/api/articles?limit=10",
 		});
 
@@ -104,7 +82,7 @@ describe("List Articles API", () => {
 	});
 
 	it("doesn't allow limit to be greater than 20", async () => {
-		const r = await apiCall<ArticlesResponse>({
+		const r = await apiCall<ArticleList>({
 			url: "/api/articles?limit=50",
 		});
 
@@ -132,7 +110,7 @@ describe("List Articles API", () => {
 	});
 
 	it("honors offset parameter", async () => {
-		const r = await apiCall<ArticlesResponse>({
+		const r = await apiCall<ArticleList>({
 			url: "/api/articles?offset=40",
 		});
 
@@ -160,7 +138,7 @@ describe("List Articles API", () => {
 	});
 
 	it("honors tag parameter", async () => {
-		const r = await apiCall<ArticlesResponse>({
+		const r = await apiCall<ArticleList>({
 			url: "/api/articles?tag=x4",
 		});
 
@@ -187,7 +165,7 @@ describe("List Articles API", () => {
 			});
 		}
 
-		const r = await apiCall<ArticlesResponse>({
+		const r = await apiCall<ArticleList>({
 			url: "/api/articles?favorited=Jane%20Foo",
 		});
 

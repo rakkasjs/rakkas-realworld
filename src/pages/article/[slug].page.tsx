@@ -1,8 +1,7 @@
 import React from "react";
 import { definePage, DefinePageTypes } from "rakkasjs";
-import { getArticle, getComments } from "lib/conduit-client";
 import { ArticleView } from "../ArticleView";
-import { Article, Comment } from "lib/api-types";
+import { Article, Comment } from "lib/interfaces";
 import { Helmet } from "react-helmet-async";
 
 type ArticlePageTypes = DefinePageTypes<{
@@ -11,11 +10,10 @@ type ArticlePageTypes = DefinePageTypes<{
 }>;
 
 export default definePage<ArticlePageTypes>({
-	async load({ context: { apiUrl, user }, fetch, params: { slug } }) {
-		const ctx = { apiUrl, user, fetch };
+	async load({ helpers, params: { slug } }) {
 		const [article, comments] = await Promise.all([
-			getArticle(ctx, slug),
-			getComments(ctx, slug),
+			helpers.conduit.getArticle(slug),
+			helpers.conduit.getComments(slug),
 		]);
 
 		return { data: { article, comments } };

@@ -12,6 +12,8 @@ describe("Editor", () => {
 	beforeEach(() => resetDb());
 
 	it("shows article page for the author", () => {
+		cy.visit("/");
+
 		// When I sign up and create an article
 		registerJohnDoe().then((token) => {
 			cy.request({
@@ -80,7 +82,7 @@ describe("Editor", () => {
 		cy.contains("not found", { matchCase: false });
 	});
 
-	it.only("shows article page for others", () => {
+	it("shows article page for others", () => {
 		// When I sign up and create an article
 		registerJohnDoe().then((token) => {
 			cy.request({

@@ -1,7 +1,6 @@
 import { ActionButton } from "lib/ActionButton";
-import { Article } from "lib/api-types";
+import { Article } from "lib/interfaces";
 import { ConduitContext } from "lib/ConduitContext";
-import { favorite, unfavorite } from "lib/conduit-client";
 import { Link } from "rakkasjs";
 import React, { CSSProperties, FC, useContext } from "react";
 
@@ -19,11 +18,10 @@ export const FavoriteButton: FC<FavoriteButtonProps> = ({
 	onChange,
 }) => {
 	const ctx = useContext(ConduitContext);
-	const { user } = ctx;
 
-	return user ? (
+	return ctx.user ? (
 		<ActionButton
-			key={`${user.token}:${article.slug}:${article.favorited}`}
+			key={`${ctx.user.token}:${article.slug}:${article.favorited}`}
 			style={style}
 			action={
 				"/api/form/article/" +
@@ -69,8 +67,8 @@ export const FavoriteButton: FC<FavoriteButtonProps> = ({
 			outline={!article.favorited}
 			onClick={async () => {
 				const newArticle = await (article.favorited
-					? unfavorite(ctx, article.slug)
-					: favorite(ctx, article.slug));
+					? ctx.conduit.unfavoriteArticle(article.slug)
+					: ctx.conduit.favoriteArticle(article.slug));
 				onChange?.(newArticle);
 			}}
 		/>

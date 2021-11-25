@@ -1,6 +1,6 @@
 import { Link } from "rakkasjs";
 import React, { FC } from "react";
-import { Article } from "lib/api-types";
+import { Article } from "lib/interfaces";
 import { FavoriteButton } from "lib/FavoriteButton";
 
 export interface ArticlePreviewProps {

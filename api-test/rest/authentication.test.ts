@@ -1,4 +1,4 @@
-import { UserResponse } from "lib/api-types";
+import { User } from "lib/interfaces";
 import {
 	apiCall,
 	expectUser,
@@ -13,7 +13,7 @@ describe("Authentication API", () => {
 	});
 
 	it("authenticates user with correct credentials", async () => {
-		const r = await apiCall<UserResponse>({
+		const r = await apiCall<{ user: User }>({
 			url: "/api/users/login",
 			method: "POST",
 			data: { user: { email: "john.doe@example.com", password: "topsecret" } },
@@ -24,7 +24,7 @@ describe("Authentication API", () => {
 	});
 
 	it("rejects incorrect email", async () => {
-		const r = await apiCall<UserResponse>({
+		const r = await apiCall<{ user: User }>({
 			url: "/api/users/login",
 			method: "POST",
 			data: {
@@ -39,7 +39,7 @@ describe("Authentication API", () => {
 	});
 
 	it("rejects incorrect password", async () => {
-		const r = await apiCall<UserResponse>({
+		const r = await apiCall<{ user: User }>({
 			url: "/api/users/login",
 			method: "POST",
 			data: { user: { email: "john.doe@example.com", password: "incorrect" } },
@@ -52,7 +52,7 @@ describe("Authentication API", () => {
 	});
 
 	it("reports missing fields", async () => {
-		const r = await apiCall<UserResponse>({
+		const r = await apiCall<{ user: User }>({
 			url: "/api/users/login",
 			method: "POST",
 			data: { user: {} },

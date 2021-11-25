@@ -1,9 +1,4 @@
-import {
-	Article,
-	CommentResponse,
-	MultipleCommentsResponse,
-	SingleArticleResponse,
-} from "lib/api-types";
+import { Article, Comment } from "lib/interfaces";
 import {
 	apiCall,
 	DATE_REGEX,
@@ -21,7 +16,7 @@ describe("Get Comments from an Article API", () => {
 
 		const john = await registerJohnDoe();
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: "/api/articles",
 			method: "POST",
 			token: john.token,
@@ -43,7 +38,7 @@ describe("Get Comments from an Article API", () => {
 		article = r.data.article;
 
 		const jane = await registerJaneFoo();
-		await apiCall<CommentResponse>({
+		await apiCall<{ comment: Comment }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/comments`,
 			method: "POST",
 			token: jane.token,
@@ -52,7 +47,7 @@ describe("Get Comments from an Article API", () => {
 	});
 
 	it("gets comments", async () => {
-		const r = await apiCall<MultipleCommentsResponse>({
+		const r = await apiCall<{ comments: Comment[] }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}/comments`,
 		});
 
@@ -70,7 +65,7 @@ describe("Get Comments from an Article API", () => {
 	});
 
 	it("rejects non-existent slug", async () => {
-		const r = await apiCall<CommentResponse>({
+		const r = await apiCall<{ comment: Comment }>({
 			url: `/api/articles/non-existent-1234/comments`,
 		});
 		expect(r.status).toBe(404);

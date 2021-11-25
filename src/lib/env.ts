@@ -3,19 +3,21 @@ interface ConduitEnv {
 	DATABASE_URL: string;
 	SALT_ROUNDS: number;
 	SERVER_SECRET: string;
+	AUTH_API_URL?: string;
 }
 
 export function getEnv(): ConduitEnv {
 	const globalEnv = (globalThis as any).conduitEnv;
 	if (globalEnv) return globalEnv;
 
-	const env = (0, eval)("process.env");
+	const env = process.env;
 
 	const {
 		DATABASE_URL,
 		SALT_ROUNDS: SALT_ROUNDS_RAW,
 		SERVER_SECRET,
 		NODE_ENV,
+		AUTH_API_URL,
 	} = env;
 
 	if (!DATABASE_URL) throw new Error("DATABASE_URL is not defined");
@@ -33,5 +35,6 @@ export function getEnv(): ConduitEnv {
 		SALT_ROUNDS,
 		SERVER_SECRET,
 		NODE_ENV,
+		AUTH_API_URL,
 	});
 }

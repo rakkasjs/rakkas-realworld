@@ -1,5 +1,4 @@
-import { User, UserResponse } from "lib/api-types";
-import { ArticlesResponse } from "lib/conduit-client";
+import { ArticleList, User } from "lib/interfaces";
 import { apiCall, resetDb } from "../api-test-helpers";
 
 describe("Feed Articles API", () => {
@@ -8,7 +7,7 @@ describe("Feed Articles API", () => {
 	beforeAll(async () => {
 		await resetDb();
 		await apiCall({ url: "/api/test/populate", method: "POST" });
-		const r = await apiCall<UserResponse>({
+		const r = await apiCall<{ user: User }>({
 			url: "/api/users/login",
 			method: "POST",
 			data: {
@@ -34,7 +33,7 @@ describe("Feed Articles API", () => {
 	});
 
 	it("lists last 20 articles", async () => {
-		const r = await apiCall<ArticlesResponse>({
+		const r = await apiCall<ArticleList>({
 			url: "/api/articles/feed",
 			token: me.token,
 		});
@@ -54,7 +53,7 @@ describe("Feed Articles API", () => {
 	});
 
 	it("honors limit parameter", async () => {
-		const r = await apiCall<ArticlesResponse>({
+		const r = await apiCall<ArticleList>({
 			url: "/api/articles/feed?limit=10",
 			token: me.token,
 		});
@@ -74,7 +73,7 @@ describe("Feed Articles API", () => {
 	});
 
 	it("doesn't allow limit to be greater than 20", async () => {
-		const r = await apiCall<ArticlesResponse>({
+		const r = await apiCall<ArticleList>({
 			url: "/api/articles/feed?limit=50",
 			token: me.token,
 		});
@@ -94,7 +93,7 @@ describe("Feed Articles API", () => {
 	});
 
 	it("honors offset parameter", async () => {
-		const r = await apiCall<ArticlesResponse>({
+		const r = await apiCall<ArticleList>({
 			url: "/api/articles/feed?offset=10",
 			token: me.token,
 		});

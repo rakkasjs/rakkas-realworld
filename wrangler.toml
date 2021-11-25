@@ -1,0 +1,15 @@
+compatibility_date = "2021-11-01"
+compatibility_flags = []
+name = "rakkas-realworld"
+route = ''
+site = {bucket = "cloudflare/static", entry-point = "cloudflare"}
+type = "javascript"
+usage_model = ''
+workers_dev = true
+zone_id = ''
+
+[build]
+command = "npm run build:cloudflare-workers"
+
+[build.upload]
+format = "service-worker"

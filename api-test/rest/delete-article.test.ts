@@ -1,4 +1,4 @@
-import { Article, SingleArticleResponse } from "lib/api-types";
+import { Article } from "lib/interfaces";
 import {
 	apiCall,
 	registerJaneFoo,
@@ -6,7 +6,7 @@ import {
 	resetDb,
 } from "../api-test-helpers";
 
-describe("Update Article API", () => {
+describe("Delete Article API", () => {
 	let article: Article;
 	let johnsToken: string;
 
@@ -16,7 +16,7 @@ describe("Update Article API", () => {
 		const john = await registerJohnDoe();
 		johnsToken = john.token;
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: "/api/articles",
 			method: "POST",
 			token: johnsToken,
@@ -39,7 +39,7 @@ describe("Update Article API", () => {
 	});
 
 	it("deletes article", async () => {
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}`,
 			method: "DELETE",
 			token: johnsToken,
@@ -47,14 +47,14 @@ describe("Update Article API", () => {
 
 		expect(r.status).toBe(200);
 
-		const r2 = await apiCall<SingleArticleResponse>({
+		const r2 = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}`,
 		});
 		expect(r2.status).toBe(404);
 	});
 
 	it("rejects unauthenticated", async () => {
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}`,
 			method: "DELETE",
 		});
@@ -63,7 +63,7 @@ describe("Update Article API", () => {
 
 	it("rejects other users", async () => {
 		const jane = await registerJaneFoo();
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}`,
 			method: "DELETE",
 			token: jane.token,
@@ -72,7 +72,7 @@ describe("Update Article API", () => {
 	});
 
 	it("rejects non-existent slug", async () => {
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/invalid-slug-1234}`,
 			method: "DELETE",
 			token: johnsToken,

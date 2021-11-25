@@ -1,4 +1,4 @@
-import { Article, SingleArticleResponse } from "lib/api-types";
+import { Article } from "lib/interfaces";
 import {
 	apiCall,
 	formSubmit,
@@ -17,7 +17,7 @@ describe("Update Article API", () => {
 		const john = await registerJohnDoe();
 		johnsToken = john.token;
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: "/api/articles",
 			method: "POST",
 			token: johnsToken,
@@ -47,7 +47,7 @@ describe("Update Article API", () => {
 
 		expect(location).toBe("/");
 
-		const r = await apiCall<SingleArticleResponse>({
+		const r = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}`,
 		});
 		expect(r.status).toBe(404);

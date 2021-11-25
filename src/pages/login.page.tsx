@@ -10,21 +10,18 @@ export default definePage({
 			return {
 				status: StatusCodes.SEE_OTHER,
 				location: "/",
+				data: undefined,
 			};
 		}
 
 		return { data: undefined };
 	},
 
-	Component: function LoginPage({ context: { apiUrl }, url }) {
+	Component: function LoginPage({ url }) {
 		return (
 			<>
 				<Helmet title="Sign in" />
-				<Auth
-					type="signin"
-					apiUrl={apiUrl}
-					errorMessages={url.searchParams.getAll("error")}
-				/>
+				<Auth type="signin" errorMessages={url.searchParams.getAll("error")} />
 			</>
 		);
 	},

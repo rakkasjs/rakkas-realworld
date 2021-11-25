@@ -1,5 +1,4 @@
-import { SingleArticleResponse } from "lib/api-types";
-import { TagsResponse } from "lib/conduit-client";
+import { Article } from "lib/interfaces";
 import { apiCall, registerJohnDoe, resetDb } from "../api-test-helpers";
 
 describe("", () => {
@@ -10,7 +9,7 @@ describe("", () => {
 		const tagList = ["aaa", "bbb", "ccc"];
 
 		while (tagList.length) {
-			await apiCall<SingleArticleResponse>({
+			await apiCall<{ article: Article }>({
 				url: "/api/articles",
 				method: "POST",
 				token: john.token,
@@ -27,7 +26,7 @@ describe("", () => {
 			tagList.shift();
 		}
 
-		const r = await apiCall<TagsResponse>({ url: "/api/tags" });
+		const r = await apiCall<{ tags: string }>({ url: "/api/tags" });
 
 		expect(r.status).toBe(200);
 		expect(r.data?.tags).toStrictEqual(["ccc", "bbb", "aaa"]);

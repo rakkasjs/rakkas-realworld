@@ -1,47 +1,52 @@
 import { StatusCodes } from "http-status-codes";
 import { definePage, DefinePageTypes, navigate } from "rakkasjs";
-import React from "react";
+import React, { useContext } from "react";
 import { Helmet } from "react-helmet-async";
-import { Article, User } from "lib/api-types";
-import { getArticle, updateArticle } from "lib/conduit-client";
+import { Article } from "lib/interfaces";
 import { ArticleEditor } from "./ArticleEditor";
+import { ConduitContext } from "lib/ConduitContext";
 
 type EditArticlePageTypes = DefinePageTypes<{
 	params: {
 		slug: string;
 	};
-	data: {
-		article: Article;
-		user: User;
-	};
+	data:
+		| {
+				article: Article;
+		  }
+		| undefined;
 }>;
 
 export default definePage<EditArticlePageTypes>({
-	async load({ fetch, context: { apiUrl, user }, params: { slug } }) {
+	async load({ context: { user }, helpers, params: { slug } }) {
 		if (!user) {
 			return {
 				status: StatusCodes.SEE_OTHER,
 				location: "/register",
+				data: undefined,
 			};
 		}
 
-		const article = await getArticle({ apiUrl, user, fetch }, slug);
+		const article = await helpers.conduit.getArticle(slug);
 
 		if (article.slug !== slug) {
 			return {
 				status: StatusCodes.SEE_OTHER,
 				location: `/editor/${encodeURIComponent(article.slug)}`,
+				data: undefined,
 			};
 		}
 
-		return { data: { article, user } };
+		return { data: { article } };
 	},
 
-	Component: function ArticleEditPage({
-		context: { apiUrl },
-		data: { article, user },
-		params: { slug },
-	}) {
+	Component: function ArticleEditPage({ data, params: { slug } }) {
+		const context = useContext(ConduitContext);
+
+		if (!data) return null;
+
+		const { article } = data;
+
 		return (
 			<>
 				<Helmet title="Editor" />
@@ -50,11 +55,7 @@ export default definePage<EditArticlePageTypes>({
 					mode="update"
 					article={article}
 					onSubmit={async (article) => {
-						const result = await updateArticle(
-							{ apiUrl, fetch, user },
-							slug,
-							article,
-						);
+						const result = await context.conduit.updateArticle(slug, article);
 
 						navigate("/article/" + encodeURIComponent(result.slug));
 

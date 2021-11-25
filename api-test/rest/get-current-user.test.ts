@@ -1,4 +1,4 @@
-import { UserResponse } from "lib/api-types";
+import { User } from "lib/interfaces";
 import {
 	apiCall,
 	expectUser,
@@ -28,14 +28,14 @@ describe("Get Current User API", () => {
 			data: { user: data },
 		});
 
-		const r = await apiCall<UserResponse>({ url: "/api/user", token });
+		const r = await apiCall<{ user: User }>({ url: "/api/user", token });
 
 		expect(r.status).toBe(200);
 		expectUser(r.data?.user, data);
 	});
 
 	it("rejects unauthenticated", async () => {
-		const r = await apiCall<UserResponse>({ url: "/api/user" });
+		const r = await apiCall<{ user: User }>({ url: "/api/user" });
 		expect(r.status).toBe(401);
 	});
 });

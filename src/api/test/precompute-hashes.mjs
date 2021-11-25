@@ -1,4 +1,4 @@
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 
 const NAMES = [
 	"Rosalee Dines",
@@ -38,4 +38,7 @@ async function precomputePasswordHashes() {
 	}
 
 	console.log(output);
+
+	console.log("John Doe:", await bcrypt.hash("topsecret", 8));
+	console.log("Jane Foo:", await bcrypt.hash("nopeeky!", 8));
 }

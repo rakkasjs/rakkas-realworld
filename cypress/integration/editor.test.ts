@@ -11,8 +11,9 @@ describe("Editor", () => {
 	beforeEach(() => resetDb());
 
 	it("creates article", () => {
-		registerJohnDoe();
 		cy.visit("/");
+
+		registerJohnDoe();
 		waitForJs();
 		cy.contains("New Article").click();
 

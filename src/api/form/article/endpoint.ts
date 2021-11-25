@@ -1,40 +1,18 @@
-import {
-	convertResponse,
-	FormSubmitRequestHandler,
-	paramsToObject,
-} from "api/form/middleware";
-import { StatusCodes } from "http-status-codes";
-import { post as createArticle } from "api/_rest/articles/endpoint";
-import { SingleArticleResponse } from "lib/api-types";
+import { FormSubmitRequestHandler } from "api/form/middleware";
+import { url } from "lib/utils";
 
-export const post: FormSubmitRequestHandler = async (req) => {
-	const { tagList, ...params } = paramsToObject(req.body);
+export const post: FormSubmitRequestHandler = async ({ context, body }) => {
+	context.setRedirects({ success: "/editor", error: "/editor" });
 
-	const response = await createArticle({
-		...req,
-		type: "json",
-		body: {
-			article: {
-				...params,
-				tagList: (tagList || "")
-					.split(" ")
-					.filter(Boolean)
-					.map((s) => s.trim()),
-			},
-		},
+	const article = await context.conduit.createArticle({
+		...(body as any),
+		tagList: (body.tagList || "")
+			.split(" ")
+			.filter(Boolean)
+			.map((s) => s.trim()),
 	});
 
-	const slug =
-		response.status === 201
-			? (response.body as SingleArticleResponse).article.slug
-			: undefined;
+	context.setRedirects({ success: url`/article/${article.slug}` });
 
-	if (slug) {
-		return {
-			status: StatusCodes.SEE_OTHER,
-			headers: { location: `/article/${slug}` },
-		};
-	}
-
-	return convertResponse(response, "/", "/editor");
+	return {};
 };

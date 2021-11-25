@@ -1,7 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
-import { Article } from "lib/api-types";
+import { Article } from "lib/interfaces";
 import { ArticlePreview } from "./ArticlePreview";
-import { ARTICLES_PER_PAGE } from "lib/conduit-client";
 import { Pagination } from "./Pagination";
 
 export interface ArticlePreviewListProps {
@@ -63,7 +62,7 @@ export const ArticlePreviewList: FC<ArticlePreviewListProps> = ({
 
 			<Pagination
 				current={page}
-				total={Math.floor((articlesCount - 1) / ARTICLES_PER_PAGE) + 1}
+				total={Math.floor((articlesCount - 1) / 20) + 1}
 			/>
 		</>
 	);

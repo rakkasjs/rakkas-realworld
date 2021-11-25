@@ -1,39 +1,14 @@
-import { convertResponse, FormSubmitRequestHandler } from "api/form/middleware";
-import { StatusCodes } from "http-status-codes";
-import { del as deleteComment } from "api/_rest/articles/[slug]/comments/[commentId].endpoint";
+import { FormSubmitRequestHandler } from "api/form/middleware";
+import { url } from "lib/utils";
 
-export const post: FormSubmitRequestHandler = async (req) => {
-	const slug = req.params.slug;
-	const commentId = Number(req.params.commentId);
+export const post: FormSubmitRequestHandler = async ({
+	context,
+	params: { slug, commentId },
+}) => {
+	const redirect = url`/article/${slug}`;
+	context.setRedirects({ success: redirect, error: redirect });
 
-	const lastMinus = slug.lastIndexOf("-");
-	if (lastMinus < 0) {
-		// Redirect to original article, which should give a 404
-		return {
-			status: StatusCodes.SEE_OTHER,
-			headers: { location: `/article/${slug}` },
-		};
-	}
+	await context.conduit.deleteComment(slug, Number(commentId));
 
-	const articleId = Number(slug.slice(lastMinus + 1));
-	if (!Number.isInteger(articleId) || !Number.isInteger(commentId)) {
-		// Redirect to original article, which should give a 404
-		return {
-			status: StatusCodes.SEE_OTHER,
-			headers: { location: `/article/${slug}` },
-		};
-	}
-
-	return convertResponse(
-		await deleteComment({
-			...req,
-			context: {
-				...req.context,
-				articleId,
-			},
-			type: "json",
-		}),
-		`/article/${slug}`,
-		`/article/${slug}`,
-	);
+	return {};
 };
