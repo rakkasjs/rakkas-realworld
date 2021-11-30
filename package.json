@@ -7,6 +7,8 @@
 		"dev": "dotenv rakkas dev",
 		"build": "prisma generate && rakkas build",
 		"build:cloudflare-workers": "PRISMA_CLIENT_ENGINE_TYPE='dataproxy' prisma generate && rakkas build -d cloudflare-workers",
+		"build:netlify": "PRISMA_CLIENT_ENGINE_TYPE='dataproxy' prisma generate && rakkas build -d netlify",
+		"vercel-build": "PRISMA_CLIENT_ENGINE_TYPE='dataproxy' prisma generate && rakkas build -d vercel",
 		"configure": "dotenv node configure.js",
 		"start": "dotenv node dist/server",
 		"test": "pnpm test:unit && NODE_ENV=test start-server-and-test 'pnpm build && pnpm start' :3000/api/test/ping 'pnpm test:api && pnpm test:e2e'",
@@ -35,7 +37,7 @@
 		"jose": "^4.3.7",
 		"jsonwebtoken": "^8.5.1",
 		"prisma": "^3.5.0",
-		"rakkasjs": "v0.5.0-canary.14",
+		"rakkasjs": "v0.5.0-canary.15",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",
 		"react-helmet-async": "^1.1.2",
@@ -46,7 +48,7 @@
 		"zod": "^3.11.6"
 	},
 	"devDependencies": {
-		"@rakkasjs/cli": "v0.5.0-canary.14",
+		"@rakkasjs/cli": "v0.5.0-canary.15",
 		"@testing-library/jest-dom": "^5.15.0",
 		"@testing-library/react": "^12.1.2",
 		"@types/bcrypt": "^5.0.0",

@@ -4,14 +4,14 @@ import fs from "fs";
 import alias from "esbuild-plugin-alias";
 
 export default defineConfig(async ({ command, deploymentTarget }) => {
-	const cfw = deploymentTarget === "cloudflare-workers";
+	const serverless = deploymentTarget !== "node";
 
 	let prismaClientPath: string;
 	let prismaRuntimePath: string;
 
 	// Prisma client resolves to a stub for the browser.
 	// We need to resolve the real entry point manually for Cloudflare Workers.
-	if (cfw) {
+	if (serverless) {
 		prismaClientPath = await fs.promises.realpath(
 			"node_modules/@prisma/client/index.js",
 		);
@@ -30,7 +30,7 @@ export default defineConfig(async ({ command, deploymentTarget }) => {
 			},
 
 			plugins: [
-				cfw && {
+				serverless && {
 					enforce: "pre",
 					name: "stub",
 					resolveId(id) {
@@ -49,7 +49,7 @@ export default defineConfig(async ({ command, deploymentTarget }) => {
 			},
 		},
 
-		modifyEsbuildOptions: cfw
+		modifyEsbuildOptions: serverless
 			? (options) => {
 					// Prisma client resolves to a stub for the browser.
 					// We need to resolve the real entry point manually for Cloudflare Workers.

@@ -5,3 +5,6 @@ dist
 .env
 db.sqlite*
 cloudflare
+netlify
+.netlify
+.vercel
