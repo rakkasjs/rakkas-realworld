@@ -16,5 +16,5 @@ export const post: ConduitRequestHandler = async ({
 }) => {
 	const comment = await context.conduit.addComment(slug, body?.comment?.body);
 
-	return { body: { comment } };
+	return { body: { comment }, status: 200 };
 };

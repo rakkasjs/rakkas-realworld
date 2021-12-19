@@ -22,7 +22,7 @@ export default definePage<EditArticlePageTypes>({
 		if (!user) {
 			return {
 				status: StatusCodes.SEE_OTHER,
-				location: "/register",
+				redirect: "/register",
 				data: undefined,
 			};
 		}
@@ -32,7 +32,7 @@ export default definePage<EditArticlePageTypes>({
 		if (article.slug !== slug) {
 			return {
 				status: StatusCodes.SEE_OTHER,
-				location: `/editor/${encodeURIComponent(article.slug)}`,
+				redirect: `/editor/${encodeURIComponent(article.slug)}`,
 				data: undefined,
 			};
 		}

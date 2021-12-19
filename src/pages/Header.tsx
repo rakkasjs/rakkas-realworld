@@ -1,4 +1,4 @@
-import { Link, NavLink, useRouter } from "rakkasjs";
+import { Link, StyledLink, useRouter } from "rakkasjs";
 import React, { FC } from "react";
 import { Helmet } from "react-helmet-async";
 import { User } from "lib/interfaces";
@@ -8,7 +8,7 @@ interface HeaderProps {
 }
 
 export const Header: FC<HeaderProps> = ({ user }) => {
-	const { current } = useRouter();
+	const { currentUrl } = useRouter();
 
 	return (
 		<>
@@ -40,7 +40,7 @@ export const Header: FC<HeaderProps> = ({ user }) => {
 							<Link
 								href="/"
 								className={
-									"nav-link" + (current.pathname === "/" ? " active" : "")
+									"nav-link" + (currentUrl.pathname === "/" ? " active" : "")
 								}
 							>
 								Home
@@ -50,36 +50,36 @@ export const Header: FC<HeaderProps> = ({ user }) => {
 						{user && (
 							<>
 								<li className="nav-item">
-									<NavLink
+									<StyledLink
 										href="/editor"
 										className="nav-link"
-										currentRouteClass="active"
+										activeClass="active"
 									>
 										<i className="ion-compose"></i>&nbsp;New Article
-									</NavLink>
+									</StyledLink>
 								</li>
 
 								<li className="nav-item">
-									<NavLink
+									<StyledLink
 										href="/settings"
 										className="nav-link"
-										currentRouteClass="active"
+										activeClass="active"
 									>
 										<i className="ion-gear-a"></i>&nbsp;Settings
-									</NavLink>
+									</StyledLink>
 								</li>
 
 								<li className="nav-item">
-									<NavLink
+									<StyledLink
 										href={`/profile/${encodeURIComponent(user.username)}`}
 										className="nav-link"
-										currentRouteClass="active"
+										activeClass="active"
 									>
 										{user.image && (
 											<img src={user.image} className="user-pic" />
 										)}
 										{user.username}
-									</NavLink>
+									</StyledLink>
 								</li>
 							</>
 						)}
@@ -87,23 +87,23 @@ export const Header: FC<HeaderProps> = ({ user }) => {
 						{!user && (
 							<>
 								<li className="nav-item">
-									<NavLink
+									<StyledLink
 										href="/login"
 										className="nav-link"
-										currentRouteClass="active"
+										activeClass="active"
 									>
 										Sign in
-									</NavLink>
+									</StyledLink>
 								</li>
 
 								<li className="nav-item">
-									<NavLink
+									<StyledLink
 										href="/register"
 										className="nav-link"
-										currentRouteClass="active"
+										activeClass="active"
 									>
 										Sign up
-									</NavLink>
+									</StyledLink>
 								</li>
 							</>
 						)}

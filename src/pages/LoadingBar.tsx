@@ -3,7 +3,7 @@ import React, { FC } from "react";
 import css from "./LoadingBar.module.css";
 
 export const LoadingBar: FC = () => {
-	const { next } = useRouter();
+	const { pendingUrl } = useRouter();
 
-	return <div className={css.main + (next ? " " + css.loading : "")} />;
+	return <div className={css.main + (pendingUrl ? " " + css.loading : "")} />;
 };

@@ -9,7 +9,7 @@ export default definePage({
 		if (user) {
 			return {
 				status: StatusCodes.SEE_OTHER,
-				location: "/",
+				redirect: "/",
 				data: undefined,
 			};
 		}

@@ -6,7 +6,7 @@ export const post: ConduitRequestHandler = async ({
 }) => {
 	const article = await context.conduit.favoriteArticle(slug);
 
-	return { body: { article } };
+	return { body: { article }, status: 200 };
 };
 
 export const del: ConduitRequestHandler = async ({
@@ -15,5 +15,5 @@ export const del: ConduitRequestHandler = async ({
 }) => {
 	const article = await context.conduit.unfavoriteArticle(slug);
 
-	return { body: { article } };
+	return { body: { article }, status: 200 };
 };

@@ -22,7 +22,7 @@ export default definePage<SettingsPageTypes>({
 		if (!user)
 			return {
 				status: StatusCodes.SEE_OTHER,
-				location: "/register",
+				redirect: "/register",
 				data: undefined,
 			};
 

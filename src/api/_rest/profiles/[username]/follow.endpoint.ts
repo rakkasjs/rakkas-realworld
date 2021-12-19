@@ -6,7 +6,7 @@ export const post: ConduitRequestHandler = async ({
 }) => {
 	const profile = await context.conduit.followUser(username);
 
-	return { body: { profile } };
+	return { body: { profile }, status: 200 };
 };
 
 export const del: ConduitRequestHandler = async ({

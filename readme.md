@@ -10,11 +10,22 @@ This codebase was created to demonstrate a fully fledged fullstack application b
 
 For more information on how this works with other frontends/backends, head over to the [RealWorld](https://github.com/gothinkster/realworld) repo.
 
+## Deployments
+
+The same app is deployed on:
+
+- [Node](https://realworld.rakkasjs.org)
+- [Vercel](https://rakkas-realworld.vercel.app/)
+- [Netlify](https://rakkas-realworld.netlify.app/)
+- [Cloudflare Workers](https://rakkas-realworld.rakkasjs.workers.dev/)
+
+Serverless versions use the Node server as authentication backend because: a) it's hard or impossible to use `bcrypt` on serverless environments, and b) there is little CPU time available for secure hashing.
+
 ## Getting started
 After cloning the repo, install the dependencies:
 
 ```sh
-npm install
+pnpm install
 ```
 
 Rakkas RealWorld requires some environment variables to be set for configuration:
@@ -23,36 +34,21 @@ Rakkas RealWorld requires some environment variables to be set for configuration
 | --------------- | -------------------------------------------------------------------------------- |
 | `HOST`          | Host name or address (defaults to `localhost`)                                   |
 | `PORT`          | Port number (defaults to `3000`)                                                 |
-| `DATABASE_URL`  | File URL that points to the SQLite database file                                 |
+| `DATABASE_URL`  | Database URL (`postgresql://user:password@host/database`)                        | _ |
 | `SERVER_SECRET` | A random string used to sign the JWT                                             |
 | `SALT_ROUNDS`   | Bcrypt cost factor for hashing the passwords before storing them to the database |
 
-The easiest way to set them is to create a `.env` file in the project's root folder. Running `npm run configure` will create one with contents similar to the following:
+If you intend to deploy on Vercel, Netlify, or Cloudflare Workers, you should also set the `AUTH_API` variable and point it to a Node deployment.
 
-```
-HOST=localhost
-PORT=3000
-DATABASE_URL="file:///absolute/path/to/project/db.sqlite"
-SERVER_SECRET="a bunch of random characters"
-SALT_ROUNDS=12
-```
+For production, if your server is going to run behind a reverse proxy (as it should!), you must also add `TRUST_FORWARDED_ORIGIN=1` and configure your reverse proxy to set the headers `X-Forwarded-Proto`, `X-Forwarded-Host`, `X-Forwarded-Server`, `X-Forwarded-For` appropriately.
 
-For development, these are reasonable defaults but you may want to reduce `SALT_ROUNDS` to 8 (the minimum) to speed up development. The configuration script calculates it on your machine to make the hashing process take >= 250 ms.
-
-For production, you would probably want to move your database file elsewhere, change `localhost` to `0.0.0.0` to allow external access, and change the port number to whatever you need it to be. If you're server is going to run behind a reverse proxy (as it should!), you must also add `TRUST_FORWARDED_ORIGIN=1` and configure your reverse proxy to set the headers `X-Forwarded-Proto`, `X-Forwarded-Host`, `X-Forwarded-Server`, `X-Forwarded-For` appropriately.
-
-Once the environment variables are set, you can start a development server by running the following:
-
-```sh
-npm run bootstrap # Initialize the database
-npm run dev       # Start the dev server
-```
+Once the environment variables are set, you should then generate the Prisma client with	`pnpx prisma generate`. Then you can start a dev server with `pnpm dev`.
 
 When you're happy with the results, you can build and run a production server with these commands:
 
 ```sh
-npm run build # Build the app
-npm start     # Start production server
+pnpm build # Build the app
+pnpm start     # Start production server
 ```
 
 ## How it works
@@ -106,7 +102,7 @@ There are three types of tests in **Rakkas RealWorld**:
 
 Before running the API or end-to-end tests, you have to start a development or production server on `localhost:3000` with `NODE_ENV` environment variable set to `test`.
 
-`npm test` builds and starts a server and runs all three types of tests back to back. If you're using a `.env` file, you should set it's HOST and PORT to `localhost:3000` before running the tests this way.
+`pnpm test` builds and starts a server and runs all three types of tests back to back. If you're using a `.env` file, you should set it's HOST and PORT to `localhost:3000` before running the tests this way.
 
 Since most of the **Rakkas RealWorld** core consists of either dumb view code copied and pasted from the templates or straightforward calls to some library like `zod` or `prisma`, there are few **unit tests** at the moment. They are located next to the source modules they test.
 
@@ -115,13 +111,15 @@ Since most of the **Rakkas RealWorld** core consists of either dumb view code co
 **End-to-end tests** use `cypress` and they test the common interaction scenarios. They are located in the `cypress` directory.
 
 ### Porting to other database systems
-Thanks to Prisma, **Rakkas RealWorld** is known to be able to run on MySQL/MariaDB or PostgreSQL  as well as on SQLite. Just follow these steps:
+Thanks to Prisma, **Rakkas RealWorld** is known to be able to run on MySQL/MariaDB or PostgreSQL as well as on SQLite. Just follow these steps:
 
 1. Change the `provider` in the file `prisma/schema.prisma` to `mysql` or `postgresql`.
 2. Remove the `prisma/migrations` directory and its contents.
 3. Change the `DATABASE_URL` environment variable to a [connection URL](https://www.prisma.io/docs/reference/database-reference/connection-urls) for the target database.
 4. Recreate the initial migration with `npx prisma migrate dev`.
 5. Run the [tests](#testing) to make sure everything works fine.
+
+See the older [SQLite branch](https://github.com/rakkasjs/rakkas-realworld/tree/sqlite) for an example of how to port to SQLite.
 
 Porting to MongoDB or SQL Server should be similarly straightforward but it hasn't been tested.
 

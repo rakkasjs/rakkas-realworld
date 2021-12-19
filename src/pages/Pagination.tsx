@@ -1,4 +1,4 @@
-import { NavLink, useRouter } from "rakkasjs";
+import { StyledLink, useRouter } from "rakkasjs";
 import React, { FC } from "react";
 import css from "./Pagination.module.css";
 
@@ -8,7 +8,7 @@ interface PaginationProps {
 }
 
 export const Pagination: FC<PaginationProps> = ({ current, total }) => {
-	const { current: currentUrl } = useRouter();
+	const { currentUrl } = useRouter();
 
 	if (total < 2) return null;
 
@@ -34,66 +34,66 @@ export const Pagination: FC<PaginationProps> = ({ current, total }) => {
 			<ul className="pagination">
 				{first > 1 && (
 					<li className={css.paginationItem}>
-						<NavLink
+						<StyledLink
 							className={css.paginationLink}
 							href={pageLink(1)}
-							currentRouteClass="bg-primary"
-							nextRouteStyle={{ backgroundColor: "#ded" }}
+							activeClass="bg-primary"
+							pendingStyle={{ backgroundColor: "#ded" }}
 						>
 							&lt;&lt;
-						</NavLink>
+						</StyledLink>
 					</li>
 				)}
 
 				{current !== 1 && (
 					<li className={css.paginationItem}>
-						<NavLink
+						<StyledLink
 							className={css.paginationLink}
 							href={pageLink(current - 1)}
-							currentRouteClass="bg-primary"
-							nextRouteStyle={{ backgroundColor: "#ded" }}
+							activeClass="bg-primary"
+							pendingStyle={{ backgroundColor: "#ded" }}
 						>
 							&lt;
-						</NavLink>
+						</StyledLink>
 					</li>
 				)}
 
 				{pages.map((page) => (
 					<li key={page} className={css.paginationItem}>
-						<NavLink
+						<StyledLink
 							className={css.paginationLink}
 							href={pageLink(page)}
-							currentRouteClass="bg-primary"
-							nextRouteStyle={{ backgroundColor: "#ded" }}
+							activeClass="bg-primary"
+							pendingStyle={{ backgroundColor: "#ded" }}
 						>
 							{page}
-						</NavLink>
+						</StyledLink>
 					</li>
 				))}
 
 				{current !== total && (
 					<li className={css.paginationItem}>
-						<NavLink
+						<StyledLink
 							className={css.paginationLink}
 							href={pageLink(current + 1)}
-							currentRouteClass="bg-primary"
-							nextRouteStyle={{ backgroundColor: "#ded" }}
+							activeClass="bg-primary"
+							pendingStyle={{ backgroundColor: "#ded" }}
 						>
 							&gt;
-						</NavLink>
+						</StyledLink>
 					</li>
 				)}
 
 				{last !== total && (
 					<li className={css.paginationItem}>
-						<NavLink
+						<StyledLink
 							className={css.paginationLink}
 							href={pageLink(total)}
-							currentRouteClass="bg-primary"
-							nextRouteStyle={{ backgroundColor: "#ded" }}
+							activeClass="bg-primary"
+							pendingStyle={{ backgroundColor: "#ded" }}
 						>
 							&gt;&gt;
-						</NavLink>
+						</StyledLink>
 					</li>
 				)}
 			</ul>

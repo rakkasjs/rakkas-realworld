@@ -44,8 +44,11 @@ export default defineConfig(async ({ command, deploymentTarget }) => {
 			],
 
 			ssr: {
-				// react-markdown is a module
-				external: command === "dev" ? ["react-markdown"] : [],
+				noExternal: command === "dev" ? undefined : ["react-markdown"],
+				external:
+					command === "dev"
+						? ["@prisma/client", "react-markdown"]
+						: ["@prisma/client"],
 			},
 		},
 
@@ -55,6 +58,7 @@ export default defineConfig(async ({ command, deploymentTarget }) => {
 					// We need to resolve the real entry point manually for Cloudflare Workers.
 					options.plugins = options.plugins || [];
 					options.plugins.push(
+						// @ts-expect-error: ESBuild version mismatch
 						alias({
 							"@prisma/client": prismaClientPath,
 							"@prisma/client/runtime": prismaRuntimePath,

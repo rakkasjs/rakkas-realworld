@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { definePage, NavLink, DefinePageTypes } from "rakkasjs";
+import { definePage, StyledLink, DefinePageTypes } from "rakkasjs";
 import { ArticlePreviewList } from "../ArticlePreviewList";
 import { Profile, Article } from "lib/interfaces";
 import { FollowButton } from "lib/FollowButton";
@@ -47,13 +47,13 @@ export default definePage<ProfilePageTypes>({
 								<p>{profile.bio}</p>
 
 								{user?.username === profile.username ? (
-									<NavLink
+									<StyledLink
 										className="btn btn-sm btn-outline-secondary action-btn"
 										href="/settings"
 									>
 										<i className="ion-gear-a"></i>
 										&nbsp; Profile settings
-									</NavLink>
+									</StyledLink>
 								) : (
 									<FollowButton
 										author={profile}
@@ -72,10 +72,10 @@ export default definePage<ProfilePageTypes>({
 							<div className="articles-toggle">
 								<ul className="nav nav-pills outline-active">
 									<li className="nav-item">
-										<NavLink
+										<StyledLink
 											className="nav-link"
-											currentRouteClass="active"
-											nextRouteStyle={{
+											activeClass="active"
+											pendingStyle={{
 												borderBottom: "2px solid #777",
 												color: "#777",
 											}}
@@ -85,13 +85,13 @@ export default definePage<ProfilePageTypes>({
 												? "My"
 												: `${userName}'s`}{" "}
 											Articles
-										</NavLink>
+										</StyledLink>
 									</li>
 									<li className="nav-item">
-										<NavLink
+										<StyledLink
 											className="nav-link"
-											currentRouteClass="active"
-											nextRouteStyle={{
+											activeClass="active"
+											pendingStyle={{
 												borderBottom: "2px solid #777",
 												color: "#777",
 											}}
@@ -100,7 +100,7 @@ export default definePage<ProfilePageTypes>({
 											)}?favorites`}
 										>
 											Favorited Articles
-										</NavLink>
+										</StyledLink>
 									</li>
 								</ul>
 							</div>

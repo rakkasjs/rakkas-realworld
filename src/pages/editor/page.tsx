@@ -14,7 +14,7 @@ export default definePage<CreateArticlePageTypes>({
 		if (!user) {
 			return {
 				status: StatusCodes.SEE_OTHER,
-				location: "/register",
+				redirect: "/register",
 				data: { redirected: true },
 			};
 		}

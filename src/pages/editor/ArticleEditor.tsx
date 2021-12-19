@@ -17,10 +17,10 @@ export const ArticleEditor: FC<ArticleEditorProps> = ({
 }) => {
 	const form = useRef<HTMLFormElement>(null);
 
-	const { current } = useRouter();
+	const { currentUrl } = useRouter();
 
 	const [errors, setErrors] = useState<string[]>(
-		current.searchParams.getAll("error"),
+		currentUrl.searchParams.getAll("error"),
 	);
 
 	const mountedRef = useRef(true);

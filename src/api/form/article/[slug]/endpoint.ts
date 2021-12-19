@@ -12,8 +12,8 @@ export const post: FormSubmitRequestHandler = async ({
 		...(body as any),
 		tagList: (body.tagList || "")
 			.split(" ")
-			.filter(Boolean)
-			.map((s) => s.trim()),
+			.map((s) => s.trim())
+			.filter(Boolean),
 	});
 
 	context.setRedirects({ success: url`/article/${article.slug}` });

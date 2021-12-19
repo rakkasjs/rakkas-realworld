@@ -16,7 +16,6 @@ export default defineClientHooks({
 		const boundFetch: typeof fetch = (...args) => fetch(...args);
 
 		context = {
-			// FIXME: Use AUTH_API_URL
 			auth: new ConduitAuthClient(boundFetch, apiUrl, rootContext.user?.token),
 			conduit: new ConduitClient(boundFetch, apiUrl, rootContext.user?.token),
 			user: rootContext.user,

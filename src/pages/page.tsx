@@ -1,6 +1,6 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import { definePage, NavLink, DefinePageTypes } from "rakkasjs";
+import { definePage, StyledLink, DefinePageTypes } from "rakkasjs";
 import { ArticlePreviewList } from "./ArticlePreviewList";
 import { Article } from "lib/interfaces";
 
@@ -30,7 +30,7 @@ export default definePage<HomePageTypes>({
 				  }),
 		]);
 
-		return { data: { tags, ...articlesResponse } };
+		return { data: { tags, ...articlesResponse }, prerender: true };
 	},
 
 	Component: function HomePage({ data, url, context: { user } }) {
@@ -56,47 +56,47 @@ export default definePage<HomePageTypes>({
 								<ul className="nav nav-pills outline-active">
 									{user && (
 										<li className="nav-item">
-											<NavLink
+											<StyledLink
 												className="nav-link"
 												href="/"
-												currentRouteClass="active"
-												nextRouteStyle={{
+												activeClass="active"
+												pendingStyle={{
 													borderBottom: "2px solid #777",
 													color: "#777",
 												}}
 											>
 												Your Feed
-											</NavLink>
+											</StyledLink>
 										</li>
 									)}
 
 									<li className="nav-item">
-										<NavLink
+										<StyledLink
 											className="nav-link"
-											currentRouteClass="active"
-											nextRouteStyle={{
+											activeClass="active"
+											pendingStyle={{
 												borderBottom: "2px solid #777",
 												color: "#777",
 											}}
 											href={user ? "/?global" : "/"}
 										>
 											Global Feed
-										</NavLink>
+										</StyledLink>
 									</li>
 
 									{tag && (
 										<li className="nav-item">
-											<NavLink
+											<StyledLink
 												className="nav-link"
-												currentRouteClass="active"
-												nextRouteStyle={{
+												activeClass="active"
+												pendingStyle={{
 													borderBottom: "2px solid #777",
 													color: "#777",
 												}}
 												href={"/?tag=" + encodeURIComponent(tag)}
 											>
 												#{tag}
-											</NavLink>
+											</StyledLink>
 										</li>
 									)}
 								</ul>
@@ -118,17 +118,17 @@ export default definePage<HomePageTypes>({
 										<span className="text-muted">No tags to show</span>
 									)}
 									{data.tags.map((t, i) => (
-										<NavLink
+										<StyledLink
 											href={"?tag=" + encodeURIComponent(t)}
 											key={i}
 											className={
 												"tag-pill tag-default" +
 												(t === tag ? " tag-primary" : "")
 											}
-											nextRouteStyle={{ backgroundColor: "#8b8" }}
+											pendingStyle={{ backgroundColor: "#8b8" }}
 										>
 											{t}
-										</NavLink>
+										</StyledLink>
 									))}
 								</div>
 							</div>
