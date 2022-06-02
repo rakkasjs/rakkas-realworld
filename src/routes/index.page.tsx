@@ -11,11 +11,8 @@ export default function HomePage() {
 
 	const { value: data } = useQuery(
 		JSON.stringify(["articles", tag, page, feed]),
-		async () => {
-			const client = new ConduitClient(
-				(...args) => fetch(...args),
-				new URL("/api", url).href,
-			);
+		async (ctx) => {
+			const client = new ConduitClient(ctx.fetch, new URL("/api", url).href);
 
 			const [tags, articles] = await Promise.all([
 				client.getTags(),
