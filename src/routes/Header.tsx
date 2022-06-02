@@ -1,6 +1,5 @@
-import { Link, StyledLink, useRouter } from "rakkasjs";
-import React, { FC } from "react";
-import { Helmet } from "react-helmet-async";
+import { Head, Link, StyledLink, useLocation } from "rakkasjs";
+import { FC } from "react";
 import { User } from "lib/interfaces";
 
 interface HeaderProps {
@@ -8,11 +7,11 @@ interface HeaderProps {
 }
 
 export const Header: FC<HeaderProps> = ({ user }) => {
-	const { currentUrl } = useRouter();
+	const { current: currentUrl } = useLocation();
 
 	return (
 		<>
-			<Helmet>
+			<Head>
 				<meta charSet="utf-8" />
 				<title>Conduit</title>
 				{/* Import Ionicon icons & Google Fonts our Bootstrap theme relies on */}
@@ -27,8 +26,11 @@ export const Header: FC<HeaderProps> = ({ user }) => {
 					type="text/css"
 				/>
 				{/* Import the custom Bootstrap 4 theme from our hosted CDN */}
-				<link rel="stylesheet" href="//demo.productionready.io/main.css" />
-			</Helmet>
+				<link
+					rel="stylesheet"
+					href="https://demo.productionready.io/main.css"
+				/>
+			</Head>
 
 			<nav className="navbar navbar-light">
 				<div className="container">

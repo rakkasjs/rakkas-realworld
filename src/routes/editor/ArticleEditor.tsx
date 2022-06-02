@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import { Article, NewArticle } from "lib/interfaces";
 import { ConduitError } from "lib/conduit-error";
-import { useRouter } from "rakkasjs";
+import { useLocation } from "rakkasjs";
 import { ActionButton } from "lib/ActionButton";
 
 interface ArticleEditorProps {
@@ -17,7 +17,7 @@ export const ArticleEditor: FC<ArticleEditorProps> = ({
 }) => {
 	const form = useRef<HTMLFormElement>(null);
 
-	const { currentUrl } = useRouter();
+	const { current: currentUrl } = useLocation();
 
 	const [errors, setErrors] = useState<string[]>(
 		currentUrl.searchParams.getAll("error"),

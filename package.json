@@ -1,10 +1,11 @@
 {
 	"name": "rakkas-realworld-demo",
 	"private": true,
+	"type": "module",
 	"version": "2.0.0",
 	"description": "Rakkas RealWorld demo",
 	"scripts": {
-		"dev": "dotenv rakkas dev",
+		"dev": "dotenv vite dev",
 		"build": "prisma generate && rakkas build",
 		"build:cloudflare-workers": "PRISMA_CLIENT_ENGINE_TYPE='dataproxy' prisma generate && rakkas build -d cloudflare-workers",
 		"build:netlify": "PRISMA_CLIENT_ENGINE_TYPE='dataproxy' prisma generate && rakkas build -d netlify",
@@ -37,10 +38,9 @@
 		"jose": "^4.3.7",
 		"jsonwebtoken": "^8.5.1",
 		"prisma": "^3.5.0",
-		"rakkasjs": "0.5.3",
+		"rakkasjs": "next",
 		"react": "^18.1.0",
 		"react-dom": "^18.1.0",
-		"react-helmet-async": "^1.1.2",
 		"react-markdown": "^8.0.3",
 		"safe-compare": "^1.1.4",
 		"slugify": "^1.6.2",
@@ -48,7 +48,6 @@
 		"zod": "^3.11.6"
 	},
 	"devDependencies": {
-		"@rakkasjs/cli": "0.5.3",
 		"@testing-library/jest-dom": "^5.15.0",
 		"@testing-library/react": "^13.3.0",
 		"@types/bcrypt": "^5.0.0",
@@ -91,6 +90,7 @@
 		"stylelint-config-standard": "^25.0.0",
 		"stylelint-prettier": "^2.0.0",
 		"typescript": "^4.4.4",
+		"vite": "3.0.0-alpha.9",
 		"vite-tsconfig-paths": "^3.3.17"
 	}
 }

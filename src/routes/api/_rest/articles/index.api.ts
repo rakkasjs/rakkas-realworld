@@ -1,7 +1,8 @@
-import { StatusCodes } from "http-status-codes";
-import { ConduitRequestHandler } from "../middleware";
+import { RequestContext } from "rakkasjs";
 
-export const get: ConduitRequestHandler = async ({ context, url }) => {
+export async function get(req: Request, ctx: RequestContext) {
+	const url = ctx.url;
+
 	const tag = url.searchParams.get("tag") ?? undefined;
 	const author = url.searchParams.get("author") ?? undefined;
 	const favorited = url.searchParams.get("favorited") ?? undefined;
@@ -16,7 +17,7 @@ export const get: ConduitRequestHandler = async ({ context, url }) => {
 		offset = 0;
 	}
 
-	const articles = await context.conduit.listArticles({
+	const articles = await ctx.conduit.listArticles({
 		tag,
 		author,
 		favorited,
@@ -24,11 +25,9 @@ export const get: ConduitRequestHandler = async ({ context, url }) => {
 		offset,
 	});
 
-	return { body: articles };
-};
+	return new Response(JSON.stringify(articles));
+}
 
-export const post: ConduitRequestHandler = async ({ context, body }) => {
-	const article = await context.conduit.createArticle(body?.article);
-
-	return { status: StatusCodes.CREATED, body: { article } };
-};
+export function post() {
+	throw new Error("Method not implemented.");
+}

@@ -5,15 +5,10 @@
 		"lib": ["DOM", "DOM.Iterable", "ES2018", "ES2019.Object"],
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,
-		"jsx": "react",
+		"jsx": "react-jsx",
 		"target": "es6",
 		"moduleResolution": "node",
-		"types": [
-			"rakkasjs/vite-types",
-			"node",
-			"jest",
-			"@testing-library/jest-dom"
-		],
+		"types": ["vite/client", "node", "jest", "@testing-library/jest-dom"],
 		"skipLibCheck": true,
 		"baseUrl": "src"
 	},

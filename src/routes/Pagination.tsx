@@ -1,4 +1,4 @@
-import { StyledLink, useRouter } from "rakkasjs";
+import { StyledLink, useLocation } from "rakkasjs";
 import React, { FC } from "react";
 import css from "./Pagination.module.css";
 
@@ -8,7 +8,7 @@ interface PaginationProps {
 }
 
 export const Pagination: FC<PaginationProps> = ({ current, total }) => {
-	const { currentUrl } = useRouter();
+	const { current: currentUrl } = useLocation();
 
 	if (total < 2) return null;
 

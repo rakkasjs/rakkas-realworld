@@ -1,5 +1,5 @@
 import { Link } from "rakkasjs";
-import React, { FC } from "react";
+import { FC } from "react";
 
 export const Footer: FC = () => (
 	<footer>

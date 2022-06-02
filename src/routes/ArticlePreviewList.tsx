@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Article } from "lib/interfaces";
 import { ArticlePreview } from "./ArticlePreview";
 import { Pagination } from "./Pagination";
