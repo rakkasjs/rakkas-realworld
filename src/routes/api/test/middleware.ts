@@ -1,12 +1,11 @@
+import { StatusCodes } from "http-status-codes";
 import { getEnv } from "lib/env";
-import { RakkasMiddleware } from "rakkasjs";
+import { RequestContext } from "rakkasjs";
 
-const testMiddleware: RakkasMiddleware = (request, next) => {
-	if (getEnv().NODE_ENV !== "test") {
-		return { status: 404 };
+export default function testMiddleware(_req: Request, ctx: RequestContext) {
+	if (import.meta.env.PROD && getEnv().NODE_ENV !== "test") {
+		return new Response(null, { status: StatusCodes.NOT_FOUND });
 	}
 
-	return next(request);
-};
-
-export default testMiddleware;
+	return ctx.next();
+}

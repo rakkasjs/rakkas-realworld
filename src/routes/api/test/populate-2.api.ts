@@ -1,13 +1,11 @@
-import { RequestHandler } from "rakkasjs";
 import { db } from "lib/db";
-import { StatusCodes } from "http-status-codes";
-import { createUser } from "./create-user.endpoint";
+import { createUser } from "./create-user.api";
 import type { Prisma } from "@prisma/client";
 import { ConduitError } from "lib/conduit-error";
 import slugify from "slugify";
 import { createSignedToken } from "lib/auth-service";
 
-export const post: RequestHandler = async () => {
+export async function post(): Promise<Response> {
 	try {
 		const john = await createUser("John Doe");
 		const jane = await createUser("Jane Foo");
@@ -51,19 +49,20 @@ export const post: RequestHandler = async () => {
 			})),
 		});
 
-		return {
-			status: StatusCodes.CREATED,
-			body: {
+		return new Response(
+			JSON.stringify({
 				slugs,
 				john: { ...john, token: await createSignedToken(john.id) },
 				jane: { ...jane, token: await createSignedToken(jane.id) },
-			},
-		};
+			}),
+		);
 	} catch (error) {
 		if (error instanceof ConduitError) {
-			return { status: error.status, body: error.message };
+			return new Response(JSON.stringify(error.message), {
+				status: error.status,
+			});
 		}
 
 		throw error;
 	}
-};
+}

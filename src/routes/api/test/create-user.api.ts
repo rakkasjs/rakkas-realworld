@@ -1,18 +1,18 @@
-import { RequestHandler } from "rakkasjs";
 import { db } from "lib/db";
 import { StatusCodes } from "http-status-codes";
 import { ConduitError } from "lib/conduit-error";
 import { User } from "lib/interfaces";
 import { createSignedToken } from "lib/auth-service";
+import { RequestContext } from "rakkasjs";
 
-export const post: RequestHandler = async ({ url }) => {
-	const username = url.searchParams.get("name") || "";
+export async function post(_req: Request, ctx: RequestContext) {
+	const username = ctx.url.searchParams.get("name") || "";
 
 	return createUser(username)
 		.then(async (u) => {
 			const user: User = { ...u, token: await createSignedToken(u.id) };
 
-			return { body: { user } };
+			return new Response(JSON.stringify({ user }));
 		})
 		.catch((error) => {
 			if (error instanceof ConduitError) {
@@ -21,7 +21,7 @@ export const post: RequestHandler = async ({ url }) => {
 
 			throw error;
 		});
-};
+}
 
 export async function createUser(username: string) {
 	if (username !== "John Doe" && username !== "Jane Foo") {

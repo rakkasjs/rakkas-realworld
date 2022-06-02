@@ -1,3 +1,3 @@
-import { RequestHandler } from "rakkasjs";
-
-export const head: RequestHandler = () => ({});
+export function head() {
+	return new Response();
+}

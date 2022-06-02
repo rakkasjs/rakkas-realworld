@@ -1,11 +1,10 @@
-import { RequestHandler } from "rakkasjs";
 import { db } from "lib/db";
 
-export const post: RequestHandler = async () => {
+export async function post() {
 	await db.articleTags.deleteMany();
 	await db.comment.deleteMany();
 	await db.article.deleteMany();
 	await db.user.deleteMany();
 
-	return {};
-};
+	return new Response();
+}

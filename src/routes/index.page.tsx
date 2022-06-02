@@ -9,26 +9,29 @@ export default function HomePage() {
 	const { tag, page, global } = parseQuery(url);
 	const feed = user && !global && !tag;
 
-	const { value: data } = useQuery("articles", async () => {
-		const client = new ConduitClient(
-			(...args) => fetch(...args),
-			new URL("/api", url).href,
-		);
+	const { value: data } = useQuery(
+		JSON.stringify(["articles", tag, page, feed]),
+		async () => {
+			const client = new ConduitClient(
+				(...args) => fetch(...args),
+				new URL("/api", url).href,
+			);
 
-		const [tags, articles] = await Promise.all([
-			client.getTags(),
-			feed
-				? client.feedArticles({
-						offset: page === 1 ? 0 : 20 * (page - 1),
-				  })
-				: client.listArticles({
-						tag: tag || undefined,
-						offset: page === 1 ? 0 : 20 * (page - 1),
-				  }),
-		]);
+			const [tags, articles] = await Promise.all([
+				client.getTags(),
+				feed
+					? client.feedArticles({
+							offset: page === 1 ? 0 : 20 * (page - 1),
+					  })
+					: client.listArticles({
+							tag: tag || undefined,
+							offset: page === 1 ? 0 : 20 * (page - 1),
+					  }),
+			]);
 
-		return { tags, ...articles };
-	});
+			return { tags, ...articles };
+		},
+	);
 
 	return (
 		<div className="home-page">

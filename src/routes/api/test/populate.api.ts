@@ -1,7 +1,6 @@
-import { RequestHandler } from "rakkasjs";
 import { db } from "lib/db";
 
-export const post: RequestHandler = async () => {
+export async function post() {
 	// Create 26 random users with one article by each
 
 	await db.user.createMany({
@@ -52,8 +51,8 @@ export const post: RequestHandler = async () => {
 				},
 	*/
 
-	return {};
-};
+	return new Response();
+}
 
 // Prehashed passwords = "<Name> <Surname>'s password"
 const USERS = [
