@@ -14,6 +14,8 @@ describe("Editor", () => {
 		cy.visit("/");
 
 		registerJohnDoe();
+
+		cy.visit("/");
 		waitForJs();
 		cy.contains("New Article").click();
 
