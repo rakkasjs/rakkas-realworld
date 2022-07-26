@@ -1,16 +1,11 @@
 import { defineConfig } from "vite";
 import rakkas from "rakkasjs/vite-plugin";
 import path from "path";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
-	resolve: {
-		alias: {
-			lib: path.resolve("src", "lib"),
-			api: path.resolve("src", "api"),
-		},
-	},
-
 	plugins: [
+		tsconfigPaths(),
 		rakkas(),
 		// TODO: Serverless
 		false && {

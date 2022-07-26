@@ -6,7 +6,7 @@ import {
 	setRootContext,
 } from "rakkasjs";
 import { StatusCodes } from "http-status-codes";
-import { User } from "lib/interfaces";
+import { User } from "~/client/interfaces";
 import { serialize } from "cookie";
 import { Helmet } from "react-helmet-async";
 import { ActionButton } from "lib/ActionButton";

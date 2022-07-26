@@ -1,18 +1,18 @@
 import { hash, compare } from "bcrypt";
 import { StatusCodes } from "http-status-codes";
-import { db } from "lib/db";
-import { getEnv } from "lib/env";
-import { ConduitAuthInterface, User, UserSummary } from "lib/interfaces";
-import { NewUser, LoginCredentials, UpdateUser } from "lib/validation";
-import { SignJWT } from "jose";
+import { db } from "./db";
+import { getEnv } from "./env";
+import { ConduitAuthInterface, User, UserSummary } from "~/client/interfaces";
+import { NewUser, LoginCredentials, UpdateUser } from "~/lib/validation";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
-import { ConduitError } from "lib/conduit-error";
+import { ConduitError } from "~/lib/conduit-error";
+import { createSignedToken } from "~/service";
 
 export class ConduitAuthService implements ConduitAuthInterface {
-	#user?: Promise<UserSummary | undefined>;
+	#userFactory?: () => Promise<UserSummary | undefined>;
 
-	constructor(user?: Promise<UserSummary | undefined>) {
-		this.#user = user;
+	constructor(userFactory?: () => Promise<UserSummary | undefined>) {
+		this.#userFactory = userFactory;
 	}
 
 	async register(user: NewUser): Promise<User> {
@@ -126,7 +126,7 @@ export class ConduitAuthService implements ConduitAuthInterface {
 	}
 
 	async updateUser(userUpdate: UpdateUser): Promise<User> {
-		const user = await this.#user;
+		const user = await this.#userFactory?.();
 
 		if (!user) throw new ConduitError(StatusCodes.UNAUTHORIZED);
 
@@ -160,17 +160,4 @@ export class ConduitAuthService implements ConduitAuthInterface {
 			token: user.token,
 		};
 	}
-}
-
-export async function createSignedToken(userId: number): Promise<string> {
-	const { SERVER_SECRET } = getEnv();
-
-	const secret =
-		typeof atob === "function"
-			? Uint8Array.from(atob(SERVER_SECRET), (c) => c.charCodeAt(0))
-			: Buffer.from(SERVER_SECRET, "base64");
-
-	return await new SignJWT({ id: userId })
-		.setProtectedHeader({ alg: "HS256" })
-		.sign(secret);
 }

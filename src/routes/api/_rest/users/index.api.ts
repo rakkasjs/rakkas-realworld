@@ -1,8 +1,10 @@
+import { json } from "@hattip/response";
 import { StatusCodes } from "http-status-codes";
-import { ConduitRequestHandler } from "../middleware";
+import { RequestContext } from "rakkasjs";
 
-export const post: ConduitRequestHandler = async ({ body, context }) => {
-	const user = await context.auth.register(body?.user);
+export async function post(ctx: RequestContext) {
+	const body = await ctx.request.json();
+	const user = await ctx.locals.auth.register(body?.user);
 
-	return { body: { user }, status: StatusCodes.CREATED };
-};
+	return json({ user }, { status: StatusCodes.CREATED });
+}

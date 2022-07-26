@@ -1,4 +1,5 @@
-import { User } from "lib/interfaces";
+import { describe, it, expect, beforeEach } from "vitest";
+import { User } from "~/client/interfaces";
 import {
 	apiCall,
 	expectUser,

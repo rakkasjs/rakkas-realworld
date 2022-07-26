@@ -1,4 +1,4 @@
-import { Article } from "lib/interfaces";
+import { Article } from "~/client/interfaces";
 import {
 	apiCall,
 	DATE_REGEX,

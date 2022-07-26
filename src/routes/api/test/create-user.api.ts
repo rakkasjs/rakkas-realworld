@@ -1,22 +1,23 @@
-import { db } from "lib/db";
-import { StatusCodes } from "http-status-codes";
-import { ConduitError } from "lib/conduit-error";
-import { User } from "lib/interfaces";
-import { createSignedToken } from "lib/auth-service";
 import { RequestContext } from "rakkasjs";
+import { StatusCodes } from "http-status-codes";
+import { createSignedToken } from "~/service";
+import { db } from "~/service/db";
+import { ConduitError } from "~/lib/conduit-error";
+import { User } from "~/client/interfaces";
+import { json } from "@hattip/response";
 
-export async function post(_req: Request, ctx: RequestContext) {
+export async function post(ctx: RequestContext) {
 	const username = ctx.url.searchParams.get("name") || "";
 
 	return createUser(username)
 		.then(async (u) => {
 			const user: User = { ...u, token: await createSignedToken(u.id) };
 
-			return new Response(JSON.stringify({ user }));
+			return json({ user });
 		})
 		.catch((error) => {
 			if (error instanceof ConduitError) {
-				return { status: error.status, body: error.message };
+				return json(error.message, { status: error.status });
 			}
 
 			throw error;

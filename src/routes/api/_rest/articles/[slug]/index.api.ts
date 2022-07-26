@@ -1,29 +1,24 @@
-import { ConduitRequestHandler } from "api/_rest/middleware";
+import { json } from "@hattip/response";
+import { RequestContext } from "rakkasjs";
 
-export const get: ConduitRequestHandler = async ({
-	context,
-	params: { slug },
-}) => {
-	const article = await context.conduit.getArticle(slug);
+export async function get(ctx: RequestContext) {
+	const article = await ctx.locals.conduit.getArticle(ctx.params.slug);
 
-	return { body: { article } };
-};
+	return json({ article });
+}
 
-export const put: ConduitRequestHandler = async ({
-	context,
-	body,
-	params: { slug },
-}) => {
-	const article = await context.conduit.updateArticle(slug, body?.article);
+export async function put(ctx: RequestContext) {
+	const body = await ctx.request.json();
+	const article = await ctx.locals.conduit.updateArticle(
+		ctx.params.slug,
+		body?.article,
+	);
 
-	return { body: { article } };
-};
+	return json({ article });
+}
 
-export const del: ConduitRequestHandler = async ({
-	context,
-	params: { slug },
-}) => {
-	await context.conduit.deleteArticle(slug);
+export async function del(ctx: RequestContext) {
+	await ctx.locals.conduit.deleteArticle(ctx.params.slug);
 
-	return {};
-};
+	return new Response();
+}

@@ -1,7 +1,9 @@
-import { ConduitRequestHandler } from "../middleware";
+import { json } from "@hattip/response";
+import { RequestContext } from "rakkasjs";
 
-export const post: ConduitRequestHandler = async ({ body, context }) => {
-	const user = await context.auth.login(body?.user);
+export async function post(ctx: RequestContext) {
+	const body = await ctx.request.json();
+	const user = await ctx.locals.auth.login(body?.user);
 
-	return { body: { user }, status: 200 };
-};
+	return json({ user });
+}

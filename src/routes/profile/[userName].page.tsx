@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { definePage, StyledLink, DefinePageTypes } from "rakkasjs";
 import { ArticlePreviewList } from "../ArticlePreviewList";
-import { Profile, Article } from "lib/interfaces";
+import { Profile, Article } from "~/client/interfaces";
 import { FollowButton } from "lib/FollowButton";
 import { Helmet } from "react-helmet-async";
+import NavItem from "~/components/atoms/NavItem";
 
 type ProfilePageTypes = DefinePageTypes<{
 	params: { userName: string };
@@ -71,22 +72,12 @@ export default definePage<ProfilePageTypes>({
 						<div className="col-xs-12 col-md-10 offset-md-1">
 							<div className="articles-toggle">
 								<ul className="nav nav-pills outline-active">
-									<li className="nav-item">
-										<StyledLink
-											className="nav-link"
-											activeClass="active"
-											pendingStyle={{
-												borderBottom: "2px solid #777",
-												color: "#777",
-											}}
-											href={`/profile/${encodeURIComponent(userName)}`}
-										>
-											{user && user.username === userName
-												? "My"
-												: `${userName}'s`}{" "}
-											Articles
-										</StyledLink>
-									</li>
+									<NavItem href={`/profile/${encodeURIComponent(userName)}`}>
+										{user && user.username === userName
+											? "My"
+											: `${userName}'s`}{" "}
+										Articles
+									</NavItem>
 									<li className="nav-item">
 										<StyledLink
 											className="nav-link"

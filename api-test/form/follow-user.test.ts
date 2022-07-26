@@ -1,4 +1,4 @@
-import { Profile } from "lib/interfaces";
+import { Profile } from "~/client/interfaces";
 import {
 	apiCall,
 	expectProfile,

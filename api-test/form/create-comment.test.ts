@@ -1,4 +1,4 @@
-import { Article, Comment } from "lib/interfaces";
+import { Article, Comment } from "~/client/interfaces";
 import {
 	apiCall,
 	DATE_REGEX,

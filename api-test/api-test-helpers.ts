@@ -1,9 +1,10 @@
+import { expect } from "vitest";
 import { parse, Cookie } from "set-cookie-parser";
-import { Profile, User } from "lib/interfaces";
+import { Profile, User } from "~/client/interfaces";
 import nodeFetch, { RequestInit, Response } from "node-fetch";
 import { serialize } from "cookie";
 
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "http://localhost:5173";
 
 export const DATE_REGEX =
 	/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/;

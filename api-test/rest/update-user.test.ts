@@ -1,4 +1,5 @@
-import { User } from "lib/interfaces";
+import { describe, it, expect, beforeEach } from "vitest";
+import { User } from "~/client/interfaces";
 import {
 	apiCall,
 	expectUser,
@@ -21,6 +22,7 @@ describe("Update User API", () => {
 	for (const { name, data } of updateInputs) {
 		it(`updates ${name}`, async () => {
 			const { token } = await registerJohnDoe();
+
 			const r = await apiCall<{ user: User }>({
 				url: "/api/user",
 				method: "PUT",

@@ -1,4 +1,4 @@
-import { db } from "lib/db";
+import { db } from "~/service/db";
 
 export async function post() {
 	// Create 26 random users with one article by each
@@ -41,20 +41,11 @@ export async function post() {
 			.flat(),
 	});
 
-	/*
-					tags: {
-					create: [
-						{ tagName: fullName },
-						{ tagName: `x${Math.floor(i / 10)}` },
-						{ tagName: `y${i % 10}` },
-					],
-				},
-	*/
-
 	return new Response();
 }
 
 // Prehashed passwords = "<Name> <Surname>'s password"
+// Hashes were computed by running ./precompute-hashes.mjs
 const USERS = [
 	[
 		"Rosalee Dines",

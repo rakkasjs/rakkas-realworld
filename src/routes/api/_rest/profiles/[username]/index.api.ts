@@ -1,10 +1,8 @@
-import { ConduitRequestHandler } from "api/_rest/middleware";
+import { json } from "@hattip/response";
+import { RequestContext } from "rakkasjs";
 
-export const get: ConduitRequestHandler = async ({
-	params: { username },
-	context,
-}) => {
-	const profile = await context.conduit.getProfile(username);
+export async function get(ctx: RequestContext) {
+	const profile = await ctx.locals.conduit.getProfile(ctx.params.username);
 
-	return { body: { profile } };
-};
+	return json({ profile });
+}

@@ -1,4 +1,4 @@
-import { Article, Comment, User } from "lib/interfaces";
+import { Article, Comment, User } from "~/client/interfaces";
 import {
 	apiCall,
 	formSubmit,

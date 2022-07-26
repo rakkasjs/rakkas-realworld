@@ -1,4 +1,4 @@
-import { User } from "lib/interfaces";
+import { User } from "~/client/interfaces";
 import {
 	apiCall,
 	expectUser,

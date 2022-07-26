@@ -1,4 +1,5 @@
-import { Profile } from "lib/interfaces";
+import { describe, it, expect } from "vitest";
+import { Profile } from "~/client/interfaces";
 import {
 	apiCall,
 	expectProfile,

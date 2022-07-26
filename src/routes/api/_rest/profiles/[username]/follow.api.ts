@@ -1,19 +1,14 @@
-import { ConduitRequestHandler } from "api/_rest/middleware";
+import { json } from "@hattip/response";
+import { RequestContext } from "rakkasjs";
 
-export const post: ConduitRequestHandler = async ({
-	params: { username },
-	context,
-}) => {
-	const profile = await context.conduit.followUser(username);
+export async function post(ctx: RequestContext) {
+	const profile = await ctx.locals.conduit.followUser(ctx.params.username);
 
-	return { body: { profile }, status: 200 };
-};
+	return json({ profile });
+}
 
-export const del: ConduitRequestHandler = async ({
-	params: { username },
-	context,
-}) => {
-	const profile = await context.conduit.unfollowUser(username);
+export async function del(ctx: RequestContext) {
+	const profile = await ctx.locals.conduit.unfollowUser(ctx.params.username);
 
-	return { body: { profile } };
-};
+	return json({ profile });
+}

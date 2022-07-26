@@ -34,7 +34,7 @@ import type {
 	UpdateUser,
 	NewArticle,
 	UpdateArticle,
-} from "lib/validation";
+} from "~/lib/validation";
 
 export type {
 	NewUser,

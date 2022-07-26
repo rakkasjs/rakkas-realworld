@@ -1,6 +1,6 @@
 import { Link, navigate } from "rakkasjs";
 import React, { FC, useContext, useEffect, useState } from "react";
-import { Article, Comment } from "lib/interfaces";
+import { Article, Comment } from "~/client/interfaces";
 import ReactMarkdown from "react-markdown";
 import { ActionButton } from "lib/ActionButton";
 import { ConduitContext } from "lib/ConduitContext";

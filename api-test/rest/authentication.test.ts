@@ -1,4 +1,5 @@
-import { User } from "lib/interfaces";
+import { describe, it, expect, beforeEach } from "vitest";
+import { User } from "~/client/interfaces";
 import {
 	apiCall,
 	expectUser,
@@ -61,8 +62,8 @@ describe("Authentication API", () => {
 		expect(r.status).toBe(422);
 		expect(r.error).toMatchObject({
 			errors: {
-				"email": ["Required"],
-				"password": ["Required"],
+				email: ["Required"],
+				password: ["Required"],
 			},
 		});
 	});

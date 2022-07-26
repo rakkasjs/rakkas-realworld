@@ -1,8 +1,16 @@
 import "rakkasjs";
-import { ConduitInterface } from "lib/interfaces";
+import "zod";
+
+import { ConduitAuthInterface, ConduitInterface } from "~/client/interfaces";
 
 declare module "rakkasjs" {
-	interface RequestContext {
+	interface ServerSideLocals {
+		auth: ConduitAuthInterface;
+		conduit: ConduitInterface;
+	}
+
+	interface PageLocals {
+		auth: ConduitAuthInterface;
 		conduit: ConduitInterface;
 	}
 }

@@ -1,4 +1,4 @@
-import { db } from "lib/db";
+import { db } from "~/service/db";
 
 export async function post() {
 	await db.articleTags.deleteMany();

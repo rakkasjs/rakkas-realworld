@@ -1,4 +1,5 @@
-import { User } from "lib/interfaces";
+import { describe, it, expect, beforeEach } from "vitest";
+import { User } from "~/client/interfaces";
 import {
 	apiCall,
 	expectUser,
@@ -27,7 +28,9 @@ describe("Registration API", () => {
 	});
 
 	describe("rejects duplicate", () => {
-		beforeEach(() => registerJohnDoe());
+		beforeEach(async () => {
+			await registerJohnDoe();
+		});
 
 		it("user name", async () => {
 			const r = await apiCall<{ user: User }>({

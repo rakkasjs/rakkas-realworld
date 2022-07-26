@@ -1,8 +1,7 @@
-import { ActionButton } from "lib/ActionButton";
-import { Article } from "lib/interfaces";
-import { ConduitContext } from "lib/ConduitContext";
+import { ActionButton } from "~/lib/ActionButton";
+import { Article } from "~/client/interfaces";
 import { Link } from "rakkasjs";
-import React, { CSSProperties, FC, useContext } from "react";
+import { CSSProperties, FC } from "react";
 
 export interface FavoriteButtonProps {
 	article: Article;
@@ -17,9 +16,7 @@ export const FavoriteButton: FC<FavoriteButtonProps> = ({
 	style,
 	onChange,
 }) => {
-	const ctx = useContext(ConduitContext);
-
-	return ctx.user ? (
+	return null ? (
 		<ActionButton
 			key={`${ctx.user.token}:${article.slug}:${article.favorited}`}
 			style={style}
@@ -67,8 +64,8 @@ export const FavoriteButton: FC<FavoriteButtonProps> = ({
 			outline={!article.favorited}
 			onClick={async () => {
 				const newArticle = await (article.favorited
-					? ctx.conduit.unfavoriteArticle(article.slug)
-					: ctx.conduit.favoriteArticle(article.slug));
+					? ctx.locals.conduit.unfavoriteArticle(article.slug)
+					: ctx.locals.conduit.favoriteArticle(article.slug));
 				onChange?.(newArticle);
 			}}
 		/>

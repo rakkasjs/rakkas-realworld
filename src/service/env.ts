@@ -1,5 +1,9 @@
+// eslint-disable-next-line @typescript-eslint/no-namespace
+declare namespace globalThis {
+	let conduitEnv: ConduitEnv | undefined;
+}
+
 interface ConduitEnv {
-	NODE_ENV?: string;
 	DATABASE_URL: string;
 	SALT_ROUNDS: number;
 	SERVER_SECRET: string;
@@ -7,7 +11,7 @@ interface ConduitEnv {
 }
 
 export function getEnv(): ConduitEnv {
-	const globalEnv = (globalThis as any).conduitEnv;
+	const globalEnv = globalThis.conduitEnv;
 	if (globalEnv) return globalEnv;
 
 	const env = process.env;
@@ -16,7 +20,6 @@ export function getEnv(): ConduitEnv {
 		DATABASE_URL,
 		SALT_ROUNDS: SALT_ROUNDS_RAW,
 		SERVER_SECRET,
-		NODE_ENV,
 		AUTH_API_URL,
 	} = env;
 
@@ -30,11 +33,10 @@ export function getEnv(): ConduitEnv {
 
 	if (!SERVER_SECRET) throw new Error("SERVER_SECRET is not defined");
 
-	return ((globalThis as any).conduitEnv = {
+	return (globalThis.conduitEnv = {
 		DATABASE_URL,
 		SALT_ROUNDS,
 		SERVER_SECRET,
-		NODE_ENV,
 		AUTH_API_URL,
 	});
 }

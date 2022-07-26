@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { definePage, DefinePageTypes, navigate } from "rakkasjs";
 import React, { useContext } from "react";
 import { Helmet } from "react-helmet-async";
-import { Article } from "lib/interfaces";
+import { Article } from "~/client/interfaces";
 import { ArticleEditor } from "./ArticleEditor";
 import { ConduitContext } from "lib/ConduitContext";
 

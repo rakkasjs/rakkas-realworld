@@ -13,19 +13,23 @@ import {
 	UpdateArticle,
 	UpdateUser,
 	User,
-} from "lib/interfaces";
-import { ConduitError } from "lib/conduit-error";
-import { url } from "lib/utils";
+} from "./interfaces";
+import { ConduitError } from "~/lib/conduit-error";
+import { url } from "~/lib/utils";
 
 class RestClient {
 	#fetch: typeof window.fetch;
-	#url: string;
+	#apiUrl: string;
 
 	token?: string;
 
-	public constructor(fetch: typeof window.fetch, url: string, token?: string) {
+	public constructor(
+		fetch: typeof window.fetch,
+		apiUrl: string,
+		token?: string,
+	) {
 		this.#fetch = fetch;
-		this.#url = url;
+		this.#apiUrl = apiUrl;
 		this.token = token;
 	}
 
@@ -92,7 +96,7 @@ class RestClient {
 			}
 		}
 
-		return this._doFetch(this.#url + endpoint, init);
+		return this._doFetch(this.#apiUrl + endpoint, init);
 	}
 }
 

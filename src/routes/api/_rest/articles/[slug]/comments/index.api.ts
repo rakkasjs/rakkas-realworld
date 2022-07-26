@@ -1,20 +1,18 @@
-import { ConduitRequestHandler } from "api/_rest/middleware";
+import { json } from "@hattip/response";
+import { RequestContext } from "rakkasjs";
 
-export const get: ConduitRequestHandler = async ({
-	context,
-	params: { slug },
-}) => {
-	const comments = await context.conduit.getComments(slug);
+export async function get(ctx: RequestContext) {
+	const comments = await ctx.locals.conduit.getComments(ctx.params.slug);
 
-	return { body: { comments } };
-};
+	return json({ comments });
+}
 
-export const post: ConduitRequestHandler = async ({
-	context,
-	params: { slug },
-	body,
-}) => {
-	const comment = await context.conduit.addComment(slug, body?.comment?.body);
+export async function post(ctx: RequestContext) {
+	const body = await ctx.request.json();
+	const comment = await ctx.locals.conduit.addComment(
+		ctx.params.slug,
+		body?.comment?.body,
+	);
 
-	return { body: { comment }, status: 200 };
-};
+	return json({ comment });
+}

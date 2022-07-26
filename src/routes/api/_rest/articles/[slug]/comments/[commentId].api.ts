@@ -1,10 +1,10 @@
-import { ConduitRequestHandler } from "api/_rest/middleware";
+import { RequestContext } from "rakkasjs";
 
-export const del: ConduitRequestHandler = async ({
-	context,
-	params: { slug, commentId },
-}) => {
-	await context.conduit.deleteComment(slug, Number(commentId));
+export async function del(ctx: RequestContext) {
+	await ctx.locals.conduit.deleteComment(
+		ctx.params.slug,
+		Number(ctx.params.commentId),
+	);
 
-	return {};
-};
+	return new Response();
+}

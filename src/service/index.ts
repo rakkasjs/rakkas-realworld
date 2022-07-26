@@ -1,5 +1,5 @@
-import { ConduitError } from "lib/conduit-error";
-import { db } from "lib/db";
+import { ConduitError } from "~/lib/conduit-error";
+import { db } from "./db";
 import type {
 	Article as PrismaArticle,
 	User as PrismaUser,
@@ -12,29 +12,29 @@ import {
 	Profile,
 	User,
 	UserSummary,
-} from "lib/interfaces";
+} from "~/client/interfaces";
 import {
 	ListArticlesOptions,
 	PaginationOptions,
 	NewArticle,
 	UpdateArticle,
-} from "lib/validation";
+} from "~/lib/validation";
 import { z } from "zod";
 import { StatusCodes } from "http-status-codes";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import slugify from "slugify";
-import { jwtVerify } from "jose";
-import { getEnv } from "lib/env";
+import { jwtVerify, SignJWT } from "jose";
+import { getEnv } from "./env";
 
 export class ConduitService implements ConduitInterface {
-	#user: Promise<UserSummary | undefined>;
+	#userFactory?: () => Promise<UserSummary | undefined>;
 
-	constructor(userFactory: Promise<UserSummary | undefined>) {
-		this.#user = userFactory;
+	constructor(userFactory?: () => Promise<UserSummary | undefined>) {
+		this.#userFactory = userFactory;
 	}
 
 	private async _ensureUser(): Promise<UserSummary> {
-		const currentUser = await this.#user;
+		const currentUser = await this.#userFactory?.();
 		if (!currentUser) {
 			throw new ConduitError(StatusCodes.UNAUTHORIZED, "Not logged in");
 		}
@@ -116,7 +116,7 @@ export class ConduitService implements ConduitInterface {
 	}
 
 	async getProfile(username: string): Promise<Profile> {
-		const currentUser = await this.#user;
+		const currentUser = await this.#userFactory?.();
 
 		username = z.string().parse(username);
 
@@ -231,7 +231,7 @@ export class ConduitService implements ConduitInterface {
 	}
 
 	async listArticles(options: ListArticlesOptions): Promise<ArticleList> {
-		const currentUser = await this.#user;
+		const currentUser = await this.#userFactory?.();
 
 		let {
 			tag,
@@ -329,7 +329,7 @@ export class ConduitService implements ConduitInterface {
 	}
 
 	async getArticle(slug: string): Promise<Article> {
-		const currentUser = await this.#user;
+		const currentUser = await this.#userFactory?.();
 
 		slug = z.string().parse(slug);
 		const id = parseIdFromSlug(slug);
@@ -598,6 +598,21 @@ export class ConduitService implements ConduitInterface {
 	}
 }
 
+export { ConduitAuthService } from "./auth-service";
+
+export async function createSignedToken(userId: number): Promise<string> {
+	const { SERVER_SECRET } = getEnv();
+
+	const secret =
+		typeof atob === "function"
+			? Uint8Array.from(atob(SERVER_SECRET), (c) => c.charCodeAt(0))
+			: Buffer.from(SERVER_SECRET, "base64");
+
+	return await new SignJWT({ id: userId })
+		.setProtectedHeader({ alg: "HS256" })
+		.sign(secret);
+}
+
 export async function verifyToken(
 	token?: string,
 ): Promise<UserSummary | undefined> {
@@ -622,6 +637,7 @@ export async function verifyToken(
 
 		return user ? { ...user, token } : undefined;
 	} catch (error) {
+		console.error(error);
 		return undefined;
 	}
 }

@@ -1,13 +1,14 @@
-import { ConduitRequestHandler } from "./middleware";
+import { json } from "@hattip/response";
+import { RequestContext } from "rakkasjs";
 
-export const get: ConduitRequestHandler = async ({ context }) => {
-	const user = await context.conduit.getCurrentUser();
+export async function get(ctx: RequestContext) {
+	const user = await ctx.locals.conduit.getCurrentUser();
+	return json({ user });
+}
 
-	return { body: { user } };
-};
+export async function put(ctx: RequestContext) {
+	const body = await ctx.request.json();
+	const user = await ctx.locals.auth.updateUser(body?.user);
 
-export const put: ConduitRequestHandler = async ({ context, body }) => {
-	const user = await context.auth.updateUser(body?.user);
-
-	return { body: { user } };
-};
+	return json({ user });
+}

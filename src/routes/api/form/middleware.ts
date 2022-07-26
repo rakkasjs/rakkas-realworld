@@ -2,7 +2,7 @@ import { RakkasMiddleware, RakkasRequest, RakkasResponse } from "rakkasjs";
 import { parse, serialize } from "cookie";
 import { StatusCodes } from "http-status-codes";
 import { getEnv } from "lib/env";
-import { ConduitAuthInterface, ConduitInterface } from "lib/interfaces";
+import { ConduitAuthInterface, ConduitInterface } from "~/client/interfaces";
 import { ConduitAuthService } from "lib/auth-service";
 import { ConduitService, verifyToken } from "lib/conduit-services";
 import { ConduitAuthClient, ConduitClient } from "lib/rest-client";

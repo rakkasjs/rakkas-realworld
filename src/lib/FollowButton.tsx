@@ -1,5 +1,5 @@
 import { ActionButton } from "lib/ActionButton";
-import { Profile } from "lib/interfaces";
+import { Profile } from "~/client/interfaces";
 import { ConduitContext } from "lib/ConduitContext";
 import { Link } from "rakkasjs";
 import React, { CSSProperties, FC, useContext } from "react";

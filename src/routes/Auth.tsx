@@ -1,8 +1,8 @@
 import { serialize } from "cookie";
 import { ConduitError } from "lib/conduit-error";
 import { ConduitContext } from "lib/ConduitContext";
-import { Link, navigate, setRootContext } from "rakkasjs";
-import React, { FC, useEffect, useRef, useState, useContext } from "react";
+import { Link, navigate } from "rakkasjs";
+import { FC, useEffect, useRef, useState, useContext } from "react";
 
 interface AuthProps {
 	type: "signin" | "signup";

@@ -1,7 +1,7 @@
 import React from "react";
 import { definePage, DefinePageTypes } from "rakkasjs";
 import { ArticleView } from "../ArticleView";
-import { Article, Comment } from "lib/interfaces";
+import { Article, Comment } from "~/client/interfaces";
 import { Helmet } from "react-helmet-async";
 
 type ArticlePageTypes = DefinePageTypes<{

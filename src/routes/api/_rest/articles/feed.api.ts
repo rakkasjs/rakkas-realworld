@@ -1,10 +1,11 @@
-import { ConduitRequestHandler } from "../middleware";
+import { json } from "@hattip/response";
+import { RequestContext } from "rakkasjs";
 
-export const get: ConduitRequestHandler = async ({ context, url }) => {
-	const limit = Number(url.searchParams.get("limit")) || undefined;
-	const offset = Number(url.searchParams.get("offset")) || undefined;
+export async function get(ctx: RequestContext) {
+	const limit = Number(ctx.url.searchParams.get("limit")) || undefined;
+	const offset = Number(ctx.url.searchParams.get("offset")) || undefined;
 
-	const articles = await context.conduit.feedArticles({ limit, offset });
+	const articles = await ctx.locals.conduit.feedArticles({ limit, offset });
 
-	return { body: articles };
-};
+	return json(articles);
+}

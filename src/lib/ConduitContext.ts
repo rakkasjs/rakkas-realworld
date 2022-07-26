@@ -1,10 +1,10 @@
-import { User } from "lib/interfaces";
+import { User } from "~/client/interfaces";
 import { ConduitAuthClient, ConduitClient } from "lib/rest-client";
 import { createContext } from "react";
 
 export interface ConduitContext {
 	auth: ConduitAuthClient;
-	conduit: ConduitClient;
+	api: ConduitClient;
 	user?: User;
 }
 

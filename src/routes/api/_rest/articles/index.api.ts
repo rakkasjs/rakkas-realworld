@@ -1,6 +1,8 @@
+import { json } from "@hattip/response";
+import { StatusCodes } from "http-status-codes";
 import { RequestContext } from "rakkasjs";
 
-export async function get(req: Request, ctx: RequestContext) {
+export async function get(ctx: RequestContext) {
 	const url = ctx.url;
 
 	const tag = url.searchParams.get("tag") ?? undefined;
@@ -17,7 +19,7 @@ export async function get(req: Request, ctx: RequestContext) {
 		offset = 0;
 	}
 
-	const articles = await ctx.conduit.listArticles({
+	const articles = await ctx.locals.conduit.listArticles({
 		tag,
 		author,
 		favorited,
@@ -25,9 +27,12 @@ export async function get(req: Request, ctx: RequestContext) {
 		offset,
 	});
 
-	return new Response(JSON.stringify(articles));
+	return json(articles);
 }
 
-export function post() {
-	throw new Error("Method not implemented.");
+export async function post(ctx: RequestContext) {
+	const body = await ctx.request.json();
+	const article = await ctx.locals.conduit.createArticle(body?.article);
+
+	return json({ article }, { status: StatusCodes.CREATED });
 }

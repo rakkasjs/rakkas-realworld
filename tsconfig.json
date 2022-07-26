@@ -2,15 +2,18 @@
 	"compilerOptions": {
 		"strict": true,
 		"module": "ES2020",
-		"lib": ["DOM", "DOM.Iterable", "ES2018", "ES2019.Object"],
+		"lib": ["DOM", "DOM.Iterable", "ES2021"],
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,
 		"jsx": "react-jsx",
 		"target": "es6",
 		"moduleResolution": "node",
-		"types": ["vite/client", "node", "jest", "@testing-library/jest-dom"],
+		"types": ["vite/client", "node"],
 		"skipLibCheck": true,
-		"baseUrl": "src"
+		"baseUrl": ".",
+		"paths": {
+			"~/*": ["src/*"]
+		}
 	},
 	"include": ["src/**/*", "api-test/**/*"]
 }

@@ -1,4 +1,5 @@
-import { ArticleList, User } from "lib/interfaces";
+import { describe, it, expect, beforeAll } from "vitest";
+import { ArticleList, User } from "~/client/interfaces";
 import {
 	apiCall,
 	DATE_REGEX,

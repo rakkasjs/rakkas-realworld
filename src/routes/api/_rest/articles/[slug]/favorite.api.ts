@@ -1,19 +1,14 @@
-import { ConduitRequestHandler } from "api/_rest/middleware";
+import { json } from "@hattip/response";
+import { RequestContext } from "rakkasjs";
 
-export const post: ConduitRequestHandler = async ({
-	context,
-	params: { slug },
-}) => {
-	const article = await context.conduit.favoriteArticle(slug);
+export async function post(ctx: RequestContext) {
+	const article = await ctx.locals.conduit.favoriteArticle(ctx.params.slug);
 
-	return { body: { article }, status: 200 };
-};
+	return json({ article });
+}
 
-export const del: ConduitRequestHandler = async ({
-	context,
-	params: { slug },
-}) => {
-	const article = await context.conduit.unfavoriteArticle(slug);
+export async function del(ctx: RequestContext) {
+	const article = await ctx.locals.conduit.unfavoriteArticle(ctx.params.slug);
 
-	return { body: { article }, status: 200 };
-};
+	return json({ article });
+}

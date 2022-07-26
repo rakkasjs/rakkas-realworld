@@ -1,4 +1,5 @@
-import { Article } from "lib/interfaces";
+import { describe, it, expect, beforeEach } from "vitest";
+import { Article } from "~/client/interfaces";
 import { apiCall, registerJohnDoe, resetDb } from "../api-test-helpers";
 
 describe("Get Article API", () => {

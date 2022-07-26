@@ -1,4 +1,5 @@
 import { getReasonPhrase } from "http-status-codes";
+import { json } from "@hattip/response";
 
 export class ConduitError extends Error {
 	readonly issues?: Readonly<Record<string, string[]>>;
@@ -25,12 +26,18 @@ export class ConduitError extends Error {
 
 		const messages: string[] = [];
 		for (const [field, issues] of Object.entries(this.issues)) {
+			if (!issues) continue;
+
 			for (const issue of issues) {
 				messages.push(field + " " + issue);
 			}
 		}
 
 		return messages;
+	}
+
+	toResponse(): Response {
+		return json({ errors: this.issues }, { status: this.status || 500 });
 	}
 }
 

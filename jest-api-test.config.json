@@ -1,8 +1,0 @@
-{
-	"rootDir": "api-test",
-	"testTimeout": 600000,
-	"transform": {
-		"^.+\\.(js|jsx|ts|tsx)$": ["esbuild-jest", { "sourceMap": true }],
-		"^.+\\.module\\.css$": "jest-css-modules-transform"
-	}
-}

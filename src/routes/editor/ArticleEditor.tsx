@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import { Article, NewArticle } from "lib/interfaces";
+import { Article, NewArticle } from "~/client/interfaces";
 import { ConduitError } from "lib/conduit-error";
 import { useLocation } from "rakkasjs";
 import { ActionButton } from "lib/ActionButton";

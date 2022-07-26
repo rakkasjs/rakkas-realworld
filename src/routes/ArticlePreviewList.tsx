@@ -1,32 +1,32 @@
-import { FC, useEffect, useState } from "react";
-import { Article } from "lib/interfaces";
 import { ArticlePreview } from "./ArticlePreview";
 import { Pagination } from "./Pagination";
+import { useQuery } from "rakkasjs";
 
 export interface ArticlePreviewListProps {
-	articles: Article[];
-	articlesCount: number;
-	removeWhenUnfavorited?: boolean;
+	tag: string | null;
 	page: number;
+	feed: boolean;
 }
 
-export const ArticlePreviewList: FC<ArticlePreviewListProps> = ({
-	articlesCount: originalArticlesCount,
-	articles: originalArticles,
+export function ArticlePreviewList({
+	tag,
 	page,
-	removeWhenUnfavorited,
-}) => {
-	const [{ articles, articlesCount }, setCachedData] = useState({
-		articles: originalArticles,
-		articlesCount: originalArticlesCount,
-	});
-
-	useEffect(() => {
-		setCachedData({
-			articles: originalArticles,
-			articlesCount: originalArticlesCount,
-		});
-	}, [originalArticles, originalArticlesCount]);
+	feed,
+}: ArticlePreviewListProps) {
+	const {
+		data: { articles, articlesCount },
+	} = useQuery(
+		tag ? `tagged/${tag}/${page}` : feed ? `feed/${page}` : `articles/${page}`,
+		({ locals: { conduit } }) =>
+			feed
+				? conduit.feedArticles({
+						offset: page === 1 ? 0 : 20 * (page - 1),
+				  })
+				: conduit.listArticles({
+						tag: tag || undefined,
+						offset: page === 1 ? 0 : 20 * (page - 1),
+				  }),
+	);
 
 	return (
 		<>
@@ -41,21 +41,23 @@ export const ArticlePreviewList: FC<ArticlePreviewListProps> = ({
 					key={article.slug}
 					article={article}
 					onChange={(newArticle) => {
-						if (removeWhenUnfavorited && !newArticle.favorited) {
-							setCachedData((old) => ({
-								articles: old.articles.filter(
-									(a) => a.slug !== newArticle.slug,
-								),
-								articlesCount: old.articlesCount - 1,
-							}));
-						} else {
-							setCachedData((old) => ({
-								...old,
-								articles: old.articles.map((a) =>
-									a.slug === article.slug ? newArticle : a,
-								),
-							}));
-						}
+						void newArticle;
+						// TODO: Handle mutation
+						// if (removeWhenUnfavorited && !newArticle.favorited) {
+						// 	setCachedData((old) => ({
+						// 		articles: old.articles.filter(
+						// 			(a) => a.slug !== newArticle.slug,
+						// 		),
+						// 		articlesCount: old.articlesCount - 1,
+						// 	}));
+						// } else {
+						// 	setCachedData((old) => ({
+						// 		...old,
+						// 		articles: old.articles.map((a) =>
+						// 			a.slug === article.slug ? newArticle : a,
+						// 		),
+						// 	}));
+						// }
 					}}
 				/>
 			))}
@@ -66,4 +68,4 @@ export const ArticlePreviewList: FC<ArticlePreviewListProps> = ({
 			/>
 		</>
 	);
-};
+}
