@@ -13,6 +13,7 @@ export interface ConduitInterface {
 	listArticles(options: ListArticlesOptions): Promise<ArticleList>;
 	feedArticles(options: PaginationOptions): Promise<ArticleList>;
 	getArticle(slug: string): Promise<Article>;
+	getArticleSafe(slug: string): Promise<Article | null>;
 	createArticle(article: NewArticle): Promise<Article>;
 	updateArticle(slug: string, article: UpdateArticle): Promise<Article>;
 	deleteArticle(slug: string): Promise<void>;

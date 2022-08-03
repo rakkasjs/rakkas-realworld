@@ -5,7 +5,7 @@ import {
 	expectUser,
 	registerJohnDoe,
 	resetDb,
-} from "../api-test-helpers";
+} from "./api-test-helpers";
 
 describe("Authentication API", () => {
 	beforeEach(async () => {

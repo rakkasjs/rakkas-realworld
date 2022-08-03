@@ -47,11 +47,12 @@ export function Auth({ type }: AuthProps) {
 								loginMutation.error.issues && (
 									<ul className="error-messages">
 										{Object.entries(loginMutation.error.issues).map(
-											([source, message], i) => (
-												<li key={i}>
-													{source} {message}
-												</li>
-											),
+											([source, messages], i) =>
+												messages.map((message) => (
+													<li key={i}>
+														{source} {message}
+													</li>
+												)),
 										)}
 									</ul>
 								)

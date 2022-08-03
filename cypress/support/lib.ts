@@ -1,9 +1,12 @@
-import { Article, NewArticle, User } from "../../src/lib/interfaces";
+import { Article, NewArticle, User } from "../../src/client/interfaces";
 
 export function resetDb(): void {
 	cy.request({
 		url: "/api/test/reset",
 		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
 	});
 }
 
@@ -67,7 +70,10 @@ export function createArticle(
 	return cy.request({
 		url: "/api/articles",
 		method: "POST",
-		headers: { authorization: `Token ${token}` },
+		headers: {
+			authorization: `Token ${token}`,
+			"Content-Type": "application/json",
+		},
 		body: { article },
 	});
 }

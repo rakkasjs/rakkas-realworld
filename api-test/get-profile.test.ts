@@ -5,7 +5,7 @@ import {
 	expectProfile,
 	registerJohnDoe,
 	resetDb,
-} from "../api-test-helpers";
+} from "./api-test-helpers";
 
 describe("Get Profile API", () => {
 	it("gets profile", async () => {

@@ -23,30 +23,34 @@ export const ArticleView: FC<ArticleViewProps> = ({ slug }) => {
 	);
 
 	const { data: article } = useQuery(`article:${slug}`, async (ctx) => {
-		const article = await ctx.locals.conduit.getArticle(slug);
-		ctx.queryClient.setQueryData(
-			`profile:${article.author.username}`,
-			article.author,
-		);
+		const article = await ctx.locals.conduit.getArticleSafe(slug);
+		if (article) {
+			ctx.queryClient.setQueryData(
+				`profile:${article.author.username}`,
+				article.author,
+			);
+		}
 
 		return article;
 	});
 
-	const { data: author } = useQuery(
-		`profile:${article.author.username}`,
-		(ctx) => ctx.locals.conduit.getProfile(article.author.username),
+	const authorResult = useQuery(
+		(article || undefined) && `profile:${article!.author.username}`,
+		(ctx) => ctx.locals.conduit.getProfile(article!.author.username),
 	);
 
-	const { data: comments } = useQuery(`comments:${slug}`, (ctx) =>
-		ctx.locals.conduit.getComments(slug),
+	const commentsResult = useQuery(
+		(article || undefined) && `comments:${slug}`,
+		(ctx) => ctx.locals.conduit.getComments(slug),
 	);
 
 	const ctx = usePageContext();
 	const deleteMutation = useMutation(
 		() => ctx.locals.conduit.deleteArticle(slug),
 		{
-			onSuccess() {
-				navigate("/");
+			async onSuccess() {
+				await navigate("/");
+				ctx.queryClient.invalidateQueries(`article:${slug}`);
 			},
 		},
 	);
@@ -72,6 +76,13 @@ export const ArticleView: FC<ArticleViewProps> = ({ slug }) => {
 			},
 		},
 	);
+
+	if (!article) {
+		return <h1>Article not found</h1>;
+	}
+
+	const author = authorResult!.data;
+	const comments = commentsResult!.data;
 
 	const self = author.username === user?.username;
 

@@ -5,7 +5,7 @@ import {
 	DATE_REGEX,
 	expectProfile,
 	resetDb,
-} from "../api-test-helpers";
+} from "./api-test-helpers";
 
 describe("List Articles API", () => {
 	let janesToken: string;

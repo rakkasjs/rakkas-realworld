@@ -7,8 +7,12 @@ export interface ArticlePreviewProps {
 
 export const ArticlePreview: FC<ArticlePreviewProps> = ({ slug }) => {
 	const { data: article } = useQuery(`article:${slug}`, (ctx) =>
-		ctx.locals.conduit.getArticle(slug),
+		ctx.locals.conduit.getArticleSafe(slug),
 	);
+
+	if (!article) {
+		return null;
+	}
 
 	return (
 		<div className="article-preview">

@@ -1,12 +1,12 @@
+import { describe, it, expect, beforeEach } from "vitest";
 import { Profile } from "~/client/interfaces";
 import {
 	apiCall,
 	expectProfile,
-	formSubmit,
 	registerJaneFoo,
 	registerJohnDoe,
 	resetDb,
-} from "../api-test-helpers";
+} from "./api-test-helpers";
 
 describe("Unfollow User API", () => {
 	let janesToken: string;
@@ -25,15 +25,9 @@ describe("Unfollow User API", () => {
 			token: janesToken,
 		});
 
-		const { location } = await formSubmit({
-			url: "/api/form/profile/John%20Doe/unfollow",
-			token: janesToken,
-		});
-
-		expect(location).toBe("/profile/John%20Doe");
-
 		const r = await apiCall<{ profile: Profile }>({
-			url: "/api/profiles/John%20Doe",
+			url: "/api/profiles/John%20Doe/follow",
+			method: "DELETE",
 			token: janesToken,
 		});
 
@@ -42,15 +36,9 @@ describe("Unfollow User API", () => {
 	});
 
 	it("unfollows already unfollowed profile", async () => {
-		const { location } = await formSubmit({
-			url: "/api/form/profile/John%20Doe/unfollow",
-			token: janesToken,
-		});
-
-		expect(location).toBe("/profile/John%20Doe");
-
 		const r = await apiCall<{ profile: Profile }>({
-			url: "/api/profiles/John%20Doe",
+			url: "/api/profiles/John%20Doe/follow",
+			method: "DELETE",
 			token: janesToken,
 		});
 

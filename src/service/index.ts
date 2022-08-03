@@ -326,10 +326,20 @@ export class ConduitService implements ConduitInterface {
 	}
 
 	async getArticle(slug: string): Promise<Article> {
+		const article = await this.getArticleSafe(slug);
+
+		if (!article) {
+			throw new ConduitError(StatusCodes.NOT_FOUND, "Article not found");
+		}
+
+		return article;
+	}
+
+	async getArticleSafe(slug: string): Promise<Article | null> {
 		slug = z.string().parse(slug);
 		const id = parseIdFromSlug(slug);
 
-		if (!id) throw new ConduitError(StatusCodes.NOT_FOUND, "Article not found");
+		if (!id) return null;
 
 		const dbArticle = await db.article.findUnique({
 			where: { id },
@@ -337,7 +347,7 @@ export class ConduitService implements ConduitInterface {
 		});
 
 		if (!dbArticle) {
-			throw new ConduitError(StatusCodes.NOT_FOUND, "Article not found");
+			return null;
 		}
 
 		return dbArticleToClientArticle(dbArticle);

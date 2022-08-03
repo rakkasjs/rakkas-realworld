@@ -2,7 +2,7 @@ import { installAssertions, resetDb, waitForJs } from "../support/lib";
 
 installAssertions();
 
-describe("Signu up page", () => {
+describe("Sign up page", () => {
 	beforeEach(() => resetDb());
 
 	it("logs the registered user in", () => {
@@ -17,8 +17,6 @@ describe("Signu up page", () => {
 		cy.get("[placeholder='Email']").type("john.doe@example.com");
 		cy.get("[placeholder='Password']").type("topsecret");
 		cy.get("button").contains("Sign up").click();
-
-		cy.get("button").should("contain", "Signing up...");
 
 		cy.get("a[href='/profile/John%20Doe']").should("contain", "John Doe");
 	});

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Article } from "~/client/interfaces";
-import { apiCall, registerJohnDoe, resetDb } from "../api-test-helpers";
+import { apiCall, registerJohnDoe, resetDb } from "./api-test-helpers";
 
 describe("Get Article API", () => {
 	let article: Article;

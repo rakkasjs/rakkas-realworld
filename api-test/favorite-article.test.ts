@@ -5,7 +5,7 @@ import {
 	registerJaneFoo,
 	registerJohnDoe,
 	resetDb,
-} from "../api-test-helpers";
+} from "./api-test-helpers";
 
 describe("Favorite Article API", () => {
 	let john: User;

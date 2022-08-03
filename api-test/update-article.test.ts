@@ -6,7 +6,7 @@ import {
 	registerJaneFoo,
 	registerJohnDoe,
 	resetDb,
-} from "../api-test-helpers";
+} from "./api-test-helpers";
 
 describe("Update Article API", () => {
 	let article: Article;

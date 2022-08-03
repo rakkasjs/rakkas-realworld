@@ -220,6 +220,16 @@ export class ConduitClient extends RestClient implements ConduitInterface {
 		return result.article;
 	}
 
+	async getArticleSafe(slug: string): Promise<Article | null> {
+		return this.getArticle(slug).catch((err) => {
+			if (err instanceof ConduitError && err.status === 404) {
+				return null;
+			} else {
+				throw err;
+			}
+		});
+	}
+
 	async updateArticle(slug: string, article: UpdateArticle): Promise<Article> {
 		const result = await this._makeRequest<{ article: Article }>(
 			url`/articles/${slug}`,

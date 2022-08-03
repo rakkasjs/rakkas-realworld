@@ -1,10 +1,12 @@
-const fs = require("fs");
-const path = require("path");
-const { hashSync } = require("bcryptjs");
-const findFreePort = require("find-free-port");
-const url = require("url");
+import fs from "fs";
+import path from "path";
+import { hashSync } from "bcrypt";
+import findFreePort from "find-free-port";
+import url from "url";
+import crypto from "crypto";
+import readline from "readline";
 
-async function go() {
+export async function go() {
 	const prod = process.env.NODE_ENV === "production";
 
 	const HOST = process.env.HOST || (prod ? "0.0.0.0" : "localhost");
@@ -17,8 +19,7 @@ async function go() {
 			? url.pathToFileURL(await getDbFileName())
 			: url.pathToFileURL(path.join(__dirname, "db.sqlite")));
 	const SERVER_SECRET =
-		process.env.SERVER_SECRET ||
-		require("crypto").randomBytes(48).toString("hex");
+		process.env.SERVER_SECRET || crypto.randomBytes(48).toString("hex");
 	const SALT_ROUNDS =
 		process.env.SALT_ROUNDS || (prod ? calculateSaltRounds() : "8");
 
@@ -46,9 +47,7 @@ function calculateSaltRounds() {
 	return rounds;
 }
 
-async function getDbFileName() {
-	const readline = require("readline");
-
+async function getDbFileName(): Promise<string> {
 	const rl = readline.createInterface({
 		input: process.stdin,
 		output: process.stdout,
@@ -61,7 +60,3 @@ async function getDbFileName() {
 		});
 	});
 }
-
-go().catch((err) => {
-	console.error(err);
-});

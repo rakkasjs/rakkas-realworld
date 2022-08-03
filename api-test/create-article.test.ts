@@ -6,7 +6,7 @@ import {
 	expectProfile,
 	registerJohnDoe,
 	resetDb,
-} from "../api-test-helpers";
+} from "./api-test-helpers";
 
 describe("Create Article API", () => {
 	beforeEach(() => resetDb());

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { ArticleList, User } from "~/client/interfaces";
-import { apiCall, resetDb } from "../api-test-helpers";
+import { apiCall, resetDb } from "./api-test-helpers";
 
 describe("Feed Articles API", () => {
 	let me: User;

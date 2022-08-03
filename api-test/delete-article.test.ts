@@ -1,13 +1,13 @@
+import { describe, it, expect, beforeEach } from "vitest";
 import { Article } from "~/client/interfaces";
 import {
 	apiCall,
-	formSubmit,
 	registerJaneFoo,
 	registerJohnDoe,
 	resetDb,
-} from "../api-test-helpers";
+} from "./api-test-helpers";
 
-describe("Update Article API", () => {
+describe("Delete Article API", () => {
 	let article: Article;
 	let johnsToken: string;
 
@@ -40,47 +40,44 @@ describe("Update Article API", () => {
 	});
 
 	it("deletes article", async () => {
-		const { location } = await formSubmit({
-			url: `/api/form/article/${encodeURIComponent(article.slug)}/delete`,
+		const r = await apiCall<{ article: Article }>({
+			url: `/api/articles/${encodeURIComponent(article.slug)}`,
+			method: "DELETE",
 			token: johnsToken,
 		});
 
-		expect(location).toBe("/");
+		expect(r.status).toBe(200);
 
-		const r = await apiCall<{ article: Article }>({
+		const r2 = await apiCall<{ article: Article }>({
 			url: `/api/articles/${encodeURIComponent(article.slug)}`,
 		});
-		expect(r.status).toBe(404);
+		expect(r2.status).toBe(404);
 	});
 
 	it("rejects unauthenticated", async () => {
-		const { location } = await formSubmit({
-			url: `/api/form/article/${encodeURIComponent(article.slug)}/delete`,
+		const r = await apiCall<{ article: Article }>({
+			url: `/api/articles/${encodeURIComponent(article.slug)}`,
+			method: "DELETE",
 		});
-
-		expect(location).toBe("/register");
+		expect(r.status).toBe(401);
 	});
 
 	it("rejects other users", async () => {
 		const jane = await registerJaneFoo();
-		const { location } = await formSubmit({
-			url: `/api/form/article/${encodeURIComponent(article.slug)}/delete`,
+		const r = await apiCall<{ article: Article }>({
+			url: `/api/articles/${encodeURIComponent(article.slug)}`,
+			method: "DELETE",
 			token: jane.token,
 		});
-
-		expect(location).toBe(
-			`/article/${encodeURIComponent(
-				article.slug,
-			)}?error=author+should+be+the+same`,
-		);
+		expect(r.status).toBe(403);
 	});
 
 	it("rejects non-existent slug", async () => {
-		const { location } = await formSubmit({
-			url: `/api/form/article/invalid-slug-1234/delete`,
+		const r = await apiCall<{ article: Article }>({
+			url: `/api/articles/invalid-slug-1234}`,
+			method: "DELETE",
 			token: johnsToken,
 		});
-
-		expect(location).toBe(`/article/invalid-slug-1234`);
+		expect(r.status).toBe(404);
 	});
 });

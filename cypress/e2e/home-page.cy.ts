@@ -3,7 +3,11 @@ import { registerJohnDoe, resetDb, waitForJs } from "../support/lib";
 describe("Home page", () => {
 	beforeEach(() => {
 		resetDb();
-		cy.request({ url: "/api/test/populate", method: "POST" });
+		cy.request({
+			url: "/api/test/populate",
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+		});
 	});
 
 	it("displays title", () => {
@@ -62,12 +66,18 @@ describe("Home page", () => {
 			cy.request({
 				url: "/api/profiles/Rosalee%20Dines/follow",
 				method: "POST",
-				headers: { authorization: `Token ${token}` },
+				headers: {
+					authorization: `Token ${token}`,
+					"Content-Type": "application/json",
+				},
 			});
 			cy.request({
 				url: "/api/profiles/Tamara%20Bizier/follow",
 				method: "POST",
-				headers: { authorization: `Token ${token}` },
+				headers: {
+					authorization: `Token ${token}`,
+					"Content-Type": "application/json",
+				},
 			});
 		});
 		cy.visit("/");

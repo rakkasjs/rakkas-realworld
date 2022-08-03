@@ -1,13 +1,13 @@
+import { describe, it, expect, beforeEach } from "vitest";
 import { Article, User } from "~/client/interfaces";
 import {
 	apiCall,
-	formSubmit,
 	registerJaneFoo,
 	registerJohnDoe,
 	resetDb,
-} from "../api-test-helpers";
+} from "./api-test-helpers";
 
-describe("Unfavorite Article", () => {
+describe("Unfavorite Article API", () => {
 	let john: User;
 	let article: Article;
 
@@ -46,16 +46,9 @@ describe("Unfavorite Article", () => {
 			token: jane.token,
 		});
 
-		const { location } = await formSubmit({
-			url: `/api/form/article/${encodeURIComponent(article.slug)}/unfavorite`,
-			token: jane.token,
-			headers: { referer: "/some-weird-address" },
-		});
-
-		expect(location).toBe("/some-weird-address");
-
 		const r = await apiCall<{ article: Article }>({
-			url: `/api/articles/${encodeURIComponent(article.slug)}`,
+			url: `/api/articles/${encodeURIComponent(article.slug)}/favorite`,
+			method: "DELETE",
 			token: jane.token,
 		});
 
@@ -66,16 +59,9 @@ describe("Unfavorite Article", () => {
 	it("allow unfavoriting even if not favorited", async () => {
 		const jane = await registerJaneFoo();
 
-		const { location } = await formSubmit({
-			url: `/api/form/article/${encodeURIComponent(article.slug)}/unfavorite`,
-			token: jane.token,
-			headers: { referer: "/some-weird-address" },
-		});
-
-		expect(location).toBe("/some-weird-address");
-
 		const r = await apiCall<{ article: Article }>({
-			url: `/api/articles/${encodeURIComponent(article.slug)}`,
+			url: `/api/articles/${encodeURIComponent(article.slug)}/favorite`,
+			method: "DELETE",
 			token: jane.token,
 		});
 
@@ -84,39 +70,32 @@ describe("Unfavorite Article", () => {
 	});
 
 	it("rejects unauthenticated", async () => {
-		const { location } = await formSubmit({
-			url: `/api/form/article/${encodeURIComponent(article.slug)}/unfavorite`,
-			headers: { referer: "/some-weird-address" },
+		const r = await apiCall<{ article: Article }>({
+			url: `/api/articles/${encodeURIComponent(article.slug)}/favorite`,
+			method: "DELETE",
 		});
 
-		expect(location).toBe("/register");
+		expect(r.status).toBe(401);
 	});
 
 	it("allows unfavoriting one's own article", async () => {
-		const { location } = await formSubmit({
-			url: `/api/form/article/${encodeURIComponent(article.slug)}/unfavorite`,
-			token: john.token,
-			headers: { referer: "/some-weird-address" },
-		});
-
-		expect(location).toBe("/some-weird-address");
-
 		const r = await apiCall<{ article: Article }>({
-			url: `/api/articles/${encodeURIComponent(article.slug)}`,
+			url: `/api/articles/${encodeURIComponent(article.slug)}/favorite`,
+			method: "DELETE",
 			token: john.token,
 		});
 
 		expect(r.status).toBe(200);
-		expect(r.data?.article).toMatchObject(article);
 	});
 
 	it("rejects non-existent", async () => {
 		const jane = await registerJaneFoo();
-		const { location } = await formSubmit({
-			url: `/api/form/article/non-existent-1234/unfavorite`,
+		const r = await apiCall<{ article: Article }>({
+			url: `/api/articles/non-existent-1234/favorite`,
+			method: "DELETE",
 			token: jane.token,
 		});
 
-		expect(location).toBe("/article/non-existent-1234");
+		expect(r.status).toBe(404);
 	});
 });

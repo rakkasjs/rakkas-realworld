@@ -105,6 +105,9 @@ describe("Editor", () => {
 				headers: {
 					authorization: `Token ${token}`,
 					"Content-Type": "application/json",
+					headers: {
+						"Content-Type": "application/json",
+					},
 				},
 				body: {
 					article: {

@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { zodToConduitError } from "./zod-to-conduit-error";
 import { z } from "zod";
 

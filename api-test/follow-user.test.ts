@@ -1,12 +1,12 @@
+import { describe, it, expect, beforeEach } from "vitest";
 import { Profile } from "~/client/interfaces";
 import {
 	apiCall,
 	expectProfile,
-	formSubmit,
 	registerJaneFoo,
 	registerJohnDoe,
 	resetDb,
-} from "../api-test-helpers";
+} from "./api-test-helpers";
 
 describe("Follow User API", () => {
 	let janesToken: string;
@@ -19,15 +19,9 @@ describe("Follow User API", () => {
 	});
 
 	it("follows user", async () => {
-		const { location } = await formSubmit({
-			url: `/api/form/profile/John%20Doe/follow`,
-			token: janesToken,
-		});
-
-		expect(location).toBe("/profile/John%20Doe");
-
 		const r = await apiCall<{ profile: Profile }>({
-			url: "/api/profiles/John%20Doe",
+			url: "/api/profiles/John%20Doe/follow",
+			method: "POST",
 			token: janesToken,
 		});
 
@@ -42,12 +36,14 @@ describe("Follow User API", () => {
 			token: janesToken,
 		});
 
-		const { location } = await formSubmit({
-			url: `/api/form/profile/John%20Doe/follow`,
+		const r = await apiCall<{ profile: Profile }>({
+			url: "/api/profiles/John%20Doe/follow",
+			method: "POST",
 			token: janesToken,
 		});
 
-		expect(location).toBe("/profile/John%20Doe");
+		expect(r.status).toBe(200);
+		expectProfile(r.data?.profile, { following: true });
 
 		const r2 = await apiCall<{ profile: Profile }>({
 			url: "/api/profiles/John%20Doe/follow",
@@ -60,13 +56,12 @@ describe("Follow User API", () => {
 	});
 
 	it("rejects following oneself", async () => {
-		const { location } = await formSubmit({
-			url: "/api/form/profile/Jane%20Foo/follow",
+		const r = await apiCall<{ profile: Profile }>({
+			url: "/api/profiles/Jane%20Foo/follow",
+			method: "POST",
 			token: janesToken,
 		});
 
-		expect(location).toBe(
-			"/profile/Jane%20Foo?error=username+cannot+follow+self",
-		);
+		expect(r.status).toBe(422);
 	});
 });

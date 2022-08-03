@@ -16,10 +16,10 @@ interface ArticleEditorProps {
 
 export const ArticleEditor: FC<ArticleEditorProps> = ({ slug }) => {
 	const articleResult = useQuery(slug ? `article:${slug}` : undefined, (ctx) =>
-		ctx.locals.conduit.getArticle(slug!),
+		ctx.locals.conduit.getArticleSafe(slug!),
 	);
 
-	const article = articleResult?.data;
+	const article = articleResult?.data || undefined;
 
 	const { current: currentUrl } = useLocation();
 

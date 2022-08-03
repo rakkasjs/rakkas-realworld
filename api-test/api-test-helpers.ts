@@ -93,7 +93,11 @@ export async function formSubmit({
 	};
 
 	if (token) {
-		headers.cookie = serialize("authToken", token);
+		headers.cookie = serialize("authToken", token, {
+			maxAge: 60 * 60 * 24 * 30,
+			path: "/",
+			sameSite: true,
+		});
 	}
 
 	const params = new URLSearchParams(data);

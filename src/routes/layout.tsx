@@ -3,6 +3,7 @@ import Header from "~/components/organisms/Header";
 import Footer from "~/components/organisms/Footer";
 import LoadingBar from "~/components/atoms/LoadingBar";
 import { ErrorBoundary, Head, Layout, useQuery } from "rakkasjs";
+import { ConduitError } from "~/lib/conduit-error";
 
 const RootLayout: Layout = (props) => {
 	const { data: user } = useQuery(
@@ -17,24 +18,36 @@ const RootLayout: Layout = (props) => {
 	);
 
 	// For testing purposes
-	if (process.env.NODE_ENV === "test") {
-		// eslint-disable-next-line react-hooks/rules-of-hooks
-		useEffect(() => {
-			document.body.classList.add("hydrated");
-		}, []);
-	}
+	useEffect(() => {
+		document.body.classList.add("hydrated");
+	}, []);
 
 	return (
 		<>
 			<LoadingBar />
 			<Header user={user} />
 			<ErrorBoundary
+				key={props.url.href}
 				fallbackRender={({ error }) => (
 					<div className="container page">
-						<h1>Error</h1>
-						<p>{error.message}</p>
-						{import.meta.env.NODE_ENV !== "production" && (
-							<pre>{error.stack}</pre>
+						<Head title="Error" />
+						{error instanceof ConduitError ? (
+							<>
+								<h1>Error</h1>
+								<p>{error.message}</p>
+							</>
+						) : (
+							<>
+								<h1>Error</h1>
+								{import.meta.env.NODE_ENV === "production" ? (
+									<p>An unexpected error has occured.</p>
+								) : (
+									<>
+										<p>{error.message}</p>
+										<pre>{error.stack}</pre>
+									</>
+								)}
+							</>
 						)}
 					</div>
 				)}

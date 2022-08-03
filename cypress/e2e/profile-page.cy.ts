@@ -3,7 +3,13 @@ import { login, resetDb, waitForJs } from "../support/lib";
 describe("Profile page", () => {
 	beforeEach(() => {
 		resetDb();
-		cy.request({ url: "/api/test/populate", method: "POST" });
+		cy.request({
+			url: "/api/test/populate",
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
 	});
 
 	it("shows profile pages", () => {

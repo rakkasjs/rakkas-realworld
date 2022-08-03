@@ -11,15 +11,7 @@ export default ArticlePage;
 ArticlePage.preload = async (ctx) => {
 	const { slug } = ctx.params;
 
-	if (!ctx.queryClient.getQueryData(`article:${slug}`)) {
-		await ctx.queryClient.setQueryData(
-			`article:${slug}`,
-			await ctx.locals.conduit.getArticle(slug),
-		);
-	}
-
-	const article: Article = ctx.queryClient.getQueryData(`article:${slug}`);
-
+	// Start fetching comments in parallel
 	if (!ctx.queryClient.getQueryData(`comments:${slug}`)) {
 		ctx.queryClient.prefetchQuery(
 			`comments:${slug}`,
@@ -27,7 +19,18 @@ ArticlePage.preload = async (ctx) => {
 		);
 	}
 
+	if (!ctx.queryClient.getQueryData(`article:${slug}`)) {
+		await ctx.queryClient.setQueryData(
+			`article:${slug}`,
+			await ctx.locals.conduit.getArticleSafe(slug),
+		);
+	}
+
+	const article: Article | null = ctx.queryClient.getQueryData(
+		`article:${slug}`,
+	);
+
 	return {
-		head: <Head title={article.title} />,
+		head: <Head title={article?.title || "Not found"} />,
 	};
 };
