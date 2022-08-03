@@ -4,15 +4,15 @@ import { db } from "./db";
 import { getEnv } from "./env";
 import { ConduitAuthInterface, User, UserSummary } from "~/client/interfaces";
 import { NewUser, LoginCredentials, UpdateUser } from "~/lib/validation";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/index";
 import { ConduitError } from "~/lib/conduit-error";
 import { createSignedToken } from "~/service";
 
 export class ConduitAuthService implements ConduitAuthInterface {
-	#userFactory?: () => Promise<UserSummary | undefined>;
+	#user?: UserSummary;
 
-	constructor(userFactory?: () => Promise<UserSummary | undefined>) {
-		this.#userFactory = userFactory;
+	constructor(user?: UserSummary | undefined) {
+		this.#user = user;
 	}
 
 	async register(user: NewUser): Promise<User> {
@@ -126,9 +126,7 @@ export class ConduitAuthService implements ConduitAuthInterface {
 	}
 
 	async updateUser(userUpdate: UpdateUser): Promise<User> {
-		const user = await this.#userFactory?.();
-
-		if (!user) throw new ConduitError(StatusCodes.UNAUTHORIZED);
+		if (!this.#user) throw new ConduitError(StatusCodes.UNAUTHORIZED);
 
 		const { password, ...rest } = UpdateUser.parse(userUpdate);
 
@@ -139,7 +137,7 @@ export class ConduitAuthService implements ConduitAuthInterface {
 		}
 
 		const dbUser = await db.user.update({
-			where: { id: user.id },
+			where: { id: this.#user.id },
 			data: {
 				...rest,
 				passwordHash,
@@ -157,7 +155,7 @@ export class ConduitAuthService implements ConduitAuthInterface {
 
 		return {
 			...dbUser,
-			token: user.token,
+			token: this.#user.token,
 		};
 	}
 }

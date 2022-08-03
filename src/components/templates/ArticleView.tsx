@@ -1,49 +1,91 @@
-import { Link, navigate } from "rakkasjs";
-import React, { FC, useContext, useEffect, useState } from "react";
-import { Article, Comment } from "~/client/interfaces";
+import {
+	Link,
+	navigate,
+	useMutation,
+	usePageContext,
+	useQuery,
+} from "rakkasjs";
+import { FC } from "react";
+import { Article, Comment, User } from "~/client/interfaces";
 import ReactMarkdown from "react-markdown";
-import { ActionButton } from "lib/ActionButton";
-import { ConduitContext } from "lib/ConduitContext";
-import { FavoriteButton } from "lib/FavoriteButton";
-import { FollowButton } from "lib/FollowButton";
 import css from "./ArticleView.module.css";
+import { ActionButton } from "~/components/atoms/ActionButton";
+import { FollowButton } from "~/components/atoms/FollowButton";
+import { FavoriteButton } from "~/components/atoms/FavoriteButton";
 
 export interface ArticleViewProps {
-	article: Article;
-	comments: Comment[];
-	reload(): void;
+	slug: string;
 }
 
-export const ArticleView: FC<ArticleViewProps> = ({
-	article: fetchedArticle,
-	comments: fetchedComments,
-}) => {
-	const ctx = useContext(ConduitContext);
-	const { user } = ctx;
+export const ArticleView: FC<ArticleViewProps> = ({ slug }) => {
+	const { data: user } = useQuery("user", (ctx) =>
+		ctx.locals.conduit.getCurrentUser(),
+	);
 
-	const [article, setArticle] = useState(fetchedArticle);
-	useEffect(() => {
-		setArticle(fetchedArticle);
-	}, [fetchedArticle]);
+	const { data: article } = useQuery(`article:${slug}`, async (ctx) => {
+		const article = await ctx.locals.conduit.getArticle(slug);
+		ctx.queryClient.setQueryData(
+			`profile:${article.author.username}`,
+			article.author,
+		);
 
-	const [comments, setComments] = useState(fetchedComments);
-	useEffect(() => {
-		setComments(fetchedComments);
-	}, [fetchedComments]);
+		return article;
+	});
 
-	const self = article.author.username === user?.username;
+	const { data: author } = useQuery(
+		`profile:${article.author.username}`,
+		(ctx) => ctx.locals.conduit.getProfile(article.author.username),
+	);
+
+	const { data: comments } = useQuery(`comments:${slug}`, (ctx) =>
+		ctx.locals.conduit.getComments(slug),
+	);
+
+	const ctx = usePageContext();
+	const deleteMutation = useMutation(
+		() => ctx.locals.conduit.deleteArticle(slug),
+		{
+			onSuccess() {
+				navigate("/");
+			},
+		},
+	);
+
+	const addCommentMutation = useMutation(
+		(comment: string) => ctx.locals.conduit.addComment(slug, comment),
+		{
+			onSuccess() {
+				ctx.queryClient.invalidateQueries(`comments:${slug}`);
+				const textarea = document.querySelector(
+					"[name=body]",
+				) as HTMLTextAreaElement;
+				textarea.value = "";
+			},
+		},
+	);
+
+	const deleteCommentMutation = useMutation(
+		(id: number) => ctx.locals.conduit.deleteComment(slug, id),
+		{
+			onSuccess() {
+				ctx.queryClient.invalidateQueries(`comments:${slug}`);
+			},
+		},
+	);
+
+	const self = author.username === user?.username;
 
 	const articleMeta = (
 		<div className="article-meta">
-			<Link href={`/profile/${encodeURIComponent(article.author.username)}`}>
-				<img src={article.author.image || undefined} />
+			<Link href={`/profile/${encodeURIComponent(author.username)}`}>
+				<img src={author.image || undefined} />
 			</Link>
 			<div className="info">
 				<Link
-					href={`/profile/${encodeURIComponent(article.author.username)}`}
+					href={`/profile/${encodeURIComponent(author.username)}`}
 					className="author"
 				>
-					{article.author.username}
+					{author.username}
 				</Link>
 				<span className="date">
 					{Intl.DateTimeFormat("en-US", {
@@ -65,11 +107,6 @@ export const ArticleView: FC<ArticleViewProps> = ({
 					</Link>
 					&nbsp;&nbsp;
 					<ActionButton
-						action={
-							"/api/form/article/" +
-							encodeURIComponent(article.slug) +
-							"/delete"
-						}
 						label="Delete article"
 						inProgressLabel="Deleting..."
 						finishedLabel="Article deleted"
@@ -78,28 +115,14 @@ export const ArticleView: FC<ArticleViewProps> = ({
 						size="small"
 						outline
 						type="danger"
-						onClick={() =>
-							ctx.conduit.deleteArticle(article.slug).then(() => navigate("/"))
-						}
+						onClick={() => deleteMutation.mutateAsync()}
 					/>
 				</>
 			) : (
 				<>
-					<FollowButton
-						author={article.author}
-						onComplete={(author) => setArticle((old) => ({ ...old, author }))}
-					/>
+					<FollowButton author={author} />
 					&nbsp;&nbsp;
-					<FavoriteButton
-						article={article}
-						onChange={() =>
-							setArticle((old) => ({
-								...old,
-								favorited: !old.favorited,
-								favoritesCount: old.favoritesCount + (old.favorited ? -1 : +1),
-							}))
-						}
-					/>
+					<FavoriteButton article={article} />
 				</>
 			)}
 		</div>
@@ -158,14 +181,7 @@ export const ArticleView: FC<ArticleViewProps> = ({
 											) as HTMLTextAreaElement;
 											const commentBody = textarea.value;
 
-											if (commentBody) {
-												const comment = await ctx.conduit.addComment(
-													article.slug,
-													commentBody,
-												);
-												textarea.value = "";
-												setComments((old) => [comment, ...old]);
-											}
+											await addCommentMutation.mutateAsync(commentBody);
 										}}
 										size="small"
 										type="primary"
@@ -180,18 +196,11 @@ export const ArticleView: FC<ArticleViewProps> = ({
 
 						{comments.map((comment) => (
 							<CommentCard
+								user={user}
 								key={comment.id}
 								comment={comment}
 								article={article}
-								onDelete={() => {
-									ctx.conduit
-										.deleteComment(article.slug, comment.id)
-										.then(() =>
-											setComments((old) =>
-												old.filter((c) => c.id !== comment.id),
-											),
-										);
-								}}
+								onDelete={() => deleteCommentMutation.mutateAsync(comment.id)}
 							/>
 						))}
 					</div>
@@ -202,12 +211,11 @@ export const ArticleView: FC<ArticleViewProps> = ({
 };
 
 const CommentCard: FC<{
+	user: User | null;
 	article: Article;
 	comment: Comment;
 	onDelete(): void;
-}> = ({ article, comment, onDelete }) => {
-	const ctx = useContext(ConduitContext);
-
+}> = ({ user, article, comment, onDelete }) => {
 	return (
 		<div className="card">
 			<div className="card-block">
@@ -234,7 +242,7 @@ const CommentCard: FC<{
 						year: "numeric",
 					}).format(new Date(comment.createdAt))}
 				</span>
-				{ctx.user?.username === comment.author.username && (
+				{user?.username === comment.author.username && (
 					<form
 						className="mod-options"
 						method="POST"

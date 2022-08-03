@@ -5,7 +5,7 @@ export interface ConduitAuthInterface {
 }
 
 export interface ConduitInterface {
-	getCurrentUser(): Promise<User>;
+	getCurrentUser(): Promise<User | null>;
 	getProfile(username: string): Promise<Profile>;
 	followUser(username: string): Promise<Profile>;
 	unfollowUser(username: string): Promise<Profile>;

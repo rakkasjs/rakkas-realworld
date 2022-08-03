@@ -1,11 +1,4 @@
-import React, {
-	ReactNode,
-	CSSProperties,
-	FC,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { ReactNode, CSSProperties, FC, useState } from "react";
 import css from "./ActionButton.module.css";
 
 interface ActionButtonProps {
@@ -18,7 +11,6 @@ interface ActionButtonProps {
 	inProgressLabel?: ReactNode;
 	finishedLabel?: ReactNode;
 	failedLabel?: ReactNode;
-	action?: string;
 	style?: CSSProperties;
 	title?: string;
 }
@@ -39,18 +31,11 @@ export const ActionButton: FC<ActionButtonProps> = ({
 	inProgressLabel = label,
 	finishedLabel,
 	failedLabel = "Operation failed",
-	action,
 	style,
 	title,
 	onClick,
 }) => {
 	const [state, setState] = useState<ActionState>(ActionState.INITIAL);
-	const mountedRef = useRef(true);
-	useEffect(() => {
-		return () => {
-			mountedRef.current = false;
-		};
-	}, []);
 
 	if (state === ActionState.FINISHED) {
 		type = "primary";
@@ -72,7 +57,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
 	const btn = (
 		<button
 			className={classes}
-			style={action ? undefined : style}
+			style={style}
 			title={title}
 			disabled={state !== ActionState.INITIAL}
 			onClick={(e) => {
@@ -80,18 +65,15 @@ export const ActionButton: FC<ActionButtonProps> = ({
 				setState(ActionState.IN_PROGRESS);
 				onClick()
 					.then(() => {
-						if (!mountedRef.current) return;
 						setState(
 							finishedLabel ? ActionState.FINISHED : ActionState.INITIAL,
 						);
 					})
 					.catch(() => {
-						if (!mountedRef.current) return;
 						setState(ActionState.FAILED);
 					})
 					.then(() => {
 						setTimeout(() => {
-							if (!mountedRef.current) return;
 							setState(ActionState.INITIAL);
 						}, 2000);
 					});
@@ -119,19 +101,5 @@ export const ActionButton: FC<ActionButtonProps> = ({
 		</button>
 	);
 
-	if (action) {
-		return (
-			<form
-				method="POST"
-				action={action}
-				onSubmit={(e) => e.preventDefault()}
-				className={css.wrapperForm}
-				style={style}
-			>
-				{btn}
-			</form>
-		);
-	} else {
-		return btn;
-	}
+	return btn;
 };

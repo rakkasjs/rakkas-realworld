@@ -2,18 +2,32 @@ import { useEffect } from "react";
 import Header from "~/components/organisms/Header";
 import Footer from "~/components/organisms/Footer";
 import LoadingBar from "~/components/atoms/LoadingBar";
-import { ErrorBoundary, Head, Layout } from "rakkasjs";
+import { ErrorBoundary, Head, Layout, useQuery } from "rakkasjs";
 
 const RootLayout: Layout = (props) => {
-	useEffect(() => {
-		// For testing purposes
-		document.body.classList.add("hydrated");
-	}, []);
+	const { data: user } = useQuery(
+		"user",
+		(ctx) => ctx.locals.conduit.getCurrentUser(),
+		{
+			// Check once in a while to see if the user is still logged in
+			refetchInterval: 15_000,
+			refetchOnReconnect: true,
+			refetchOnWindowFocus: true,
+		},
+	);
+
+	// For testing purposes
+	if (process.env.NODE_ENV === "test") {
+		// eslint-disable-next-line react-hooks/rules-of-hooks
+		useEffect(() => {
+			document.body.classList.add("hydrated");
+		}, []);
+	}
 
 	return (
 		<>
 			<LoadingBar />
-			<Header user={null} />
+			<Header user={user} />
 			<ErrorBoundary
 				fallbackRender={({ error }) => (
 					<div className="container page">

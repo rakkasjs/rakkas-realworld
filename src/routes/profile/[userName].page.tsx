@@ -1,114 +1,139 @@
-import React, { useState } from "react";
-import { definePage, StyledLink, DefinePageTypes } from "rakkasjs";
-import { ArticlePreviewList } from "../ArticlePreviewList";
-import { Profile, Article } from "~/client/interfaces";
-import { FollowButton } from "lib/FollowButton";
-import { Helmet } from "react-helmet-async";
+import { Head, Page, StyledLink, usePageContext, useQuery } from "rakkasjs";
+import { ArticlePreviewList } from "../../components/organisms/ArticlePreviewList";
 import NavItem from "~/components/atoms/NavItem";
+import { FollowButton } from "~/components/atoms/FollowButton";
 
-type ProfilePageTypes = DefinePageTypes<{
-	params: { userName: string };
-	data: { profile: Profile; articles: Article[]; articlesCount: number };
-}>;
+const ProfilePage: Page<{ userName: string }> = ({
+	url,
+	params: { userName },
+}) => {
+	const { data: user } = useQuery("user", (ctx) =>
+		ctx.locals.conduit.getCurrentUser(),
+	);
 
-export default definePage<ProfilePageTypes>({
-	async load({ url, helpers, params: { userName } }) {
-		const { page, favorites } = parseQuery(url);
+	const { page, favorites } = parseQuery(url);
 
-		const [profile, articles] = await Promise.all([
-			helpers.conduit.getProfile(userName),
-			helpers.conduit.listArticles({
+	const ctx = usePageContext();
+	ctx.queryClient.getQueryData(`profile:${userName}`);
+
+	const { data: profile } = useQuery(
+		`profile:${userName}`,
+		() => ctx.locals.conduit.getProfile(userName),
+		{ refetchOnMount: true },
+	);
+
+	const articlesKey = favorites
+		? `favorites:${userName}:${page}`
+		: `articles-by:${userName}:${page}`;
+
+	const {
+		data: { articles, articlesCount },
+	} = useQuery(
+		articlesKey,
+		() =>
+			ctx.locals.conduit.listArticles({
 				offset: page === 1 ? undefined : ARTICLES_PER_PAGE * (page - 1),
 				author: favorites ? undefined : userName,
 				favorited: favorites ? userName : undefined,
 			}),
-		]);
+		{ refetchOnMount: true },
+	);
 
-		return { data: { profile, ...articles } };
-	},
-
-	Component: function ProfilePage({
-		url,
-		data: { profile: originalProfile, articles, articlesCount },
-		context: { user },
-		params: { userName },
-	}) {
-		const [profile, setProfile] = useState(originalProfile);
-		const { page, favorites } = parseQuery(url);
-
-		return (
-			<div className="profile-page">
-				<Helmet title={"@" + userName} />
-				<div className="user-info">
-					<div className="container">
-						<div className="row">
-							<div className="col-xs-12 col-md-10 offset-md-1">
-								<img src={profile.image || undefined} className="user-img" />
-								<h4>{profile.username}</h4>
-								<p>{profile.bio}</p>
-
-								{user?.username === profile.username ? (
-									<StyledLink
-										className="btn btn-sm btn-outline-secondary action-btn"
-										href="/settings"
-									>
-										<i className="ion-gear-a"></i>
-										&nbsp; Profile settings
-									</StyledLink>
-								) : (
-									<FollowButton
-										author={profile}
-										onComplete={(author) => setProfile(author)}
-										style={{ float: "right" }}
-									/>
-								)}
-							</div>
-						</div>
-					</div>
-				</div>
-
+	return (
+		<div className="profile-page">
+			<div className="user-info">
 				<div className="container">
 					<div className="row">
 						<div className="col-xs-12 col-md-10 offset-md-1">
-							<div className="articles-toggle">
-								<ul className="nav nav-pills outline-active">
-									<NavItem href={`/profile/${encodeURIComponent(userName)}`}>
-										{user && user.username === userName
-											? "My"
-											: `${userName}'s`}{" "}
-										Articles
-									</NavItem>
-									<li className="nav-item">
-										<StyledLink
-											className="nav-link"
-											activeClass="active"
-											pendingStyle={{
-												borderBottom: "2px solid #777",
-												color: "#777",
-											}}
-											href={`/profile/${encodeURIComponent(
-												userName,
-											)}?favorites`}
-										>
-											Favorited Articles
-										</StyledLink>
-									</li>
-								</ul>
-							</div>
+							<img src={profile.image || undefined} className="user-img" />
+							<h4>{profile.username}</h4>
+							<p>{profile.bio}</p>
 
-							<ArticlePreviewList
-								articles={articles}
-								articlesCount={articlesCount}
-								page={page}
-								removeWhenUnfavorited={favorites}
-							/>
+							{user?.username === profile.username ? (
+								<StyledLink
+									className="btn btn-sm btn-outline-secondary action-btn"
+									href="/settings"
+								>
+									<i className="ion-gear-a"></i>
+									&nbsp; Profile settings
+								</StyledLink>
+							) : (
+								<FollowButton author={profile} style={{ float: "right" }} />
+							)}
 						</div>
 					</div>
 				</div>
 			</div>
+
+			<div className="container">
+				<div className="row">
+					<div className="col-xs-12 col-md-10 offset-md-1">
+						<div className="articles-toggle">
+							<ul className="nav nav-pills outline-active">
+								<NavItem href={`/profile/${encodeURIComponent(userName)}`}>
+									{user && user.username === userName ? "My" : `${userName}'s`}{" "}
+									Articles
+								</NavItem>
+								<li className="nav-item">
+									<StyledLink
+										className="nav-link"
+										activeClass="active"
+										pendingStyle={{
+											borderBottom: "2px solid #777",
+											color: "#777",
+										}}
+										href={`/profile/${encodeURIComponent(userName)}?favorites`}
+									>
+										Favorited Articles
+									</StyledLink>
+								</li>
+							</ul>
+						</div>
+
+						<ArticlePreviewList
+							articles={articles}
+							articlesCount={articlesCount}
+							page={page}
+						/>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+};
+
+export default ProfilePage;
+
+ProfilePage.preload = (ctx) => {
+	const userName = ctx.params.userName;
+	const { page, favorites } = parseQuery(ctx.url);
+
+	if (!ctx.queryClient.getQueryData(`profile:${userName}`)) {
+		ctx.queryClient.prefetchQuery(
+			`profile:${userName}`,
+			ctx.locals.conduit.getProfile(userName),
 		);
-	},
-});
+	}
+
+	const articlesKey = favorites
+		? `favorites:${userName}:${page}`
+		: `articles-by:${userName}:${page}`;
+
+	if (!ctx.queryClient.getQueryData(articlesKey)) {
+		ctx.queryClient.prefetchQuery(
+			articlesKey,
+			ctx.locals.conduit.listArticles({
+				offset: page === 1 ? undefined : ARTICLES_PER_PAGE * (page - 1),
+				author: favorites ? undefined : userName,
+				favorited: favorites ? userName : undefined,
+			}),
+		);
+	}
+
+	return {
+		head: <Head title={"@" + userName} />,
+	};
+};
 
 const ARTICLES_PER_PAGE = 20;
 

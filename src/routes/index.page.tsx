@@ -1,18 +1,40 @@
-import { useLocation, Head } from "rakkasjs";
-import { ArticlePreviewList } from "./ArticlePreviewList";
-import { User } from "~/client/interfaces";
-import { Tags } from "~/routes/Tags";
+import { useLocation, Head, Page, useQuery } from "rakkasjs";
+import { ArticlePreviewList } from "~/components/organisms/ArticlePreviewList";
+import { Tags } from "~/components/organisms/Tags";
 import NavItem from "~/components/atoms/NavItem";
 
-export default function HomePage() {
-	const user: User | undefined = undefined;
+const HomePage: Page = () => {
+	const { data: user } = useQuery("user", (ctx) =>
+		ctx.locals.conduit.getCurrentUser(),
+	);
 	const { current: currentUrl } = useLocation();
 	const { tag, page, global } = parseQuery(currentUrl);
 	const feed = !!(user && !global && !tag);
 
+	const {
+		data: { articles, articlesCount },
+	} = useQuery(
+		tag ? `tagged/${tag}/${page}` : feed ? `feed/${page}` : `articles/${page}`,
+		async (ctx) => {
+			const result = feed
+				? await ctx.locals.conduit.feedArticles({
+						offset: page === 1 ? 0 : 20 * (page - 1),
+				  })
+				: await ctx.locals.conduit.listArticles({
+						tag: tag || undefined,
+						offset: page === 1 ? 0 : 20 * (page - 1),
+				  });
+
+			for (const article of result.articles) {
+				ctx.queryClient.setQueryData(`article:${article.slug}`, article);
+			}
+
+			return result;
+		},
+	);
+
 	return (
 		<div className="home-page">
-			<Head title="Home" />
 			{!user && (
 				<div className="banner">
 					<div className="container">
@@ -39,7 +61,11 @@ export default function HomePage() {
 							</ul>
 						</div>
 
-						<ArticlePreviewList tag={tag} feed={feed} page={page} />
+						<ArticlePreviewList
+							articles={articles}
+							articlesCount={articlesCount}
+							page={page}
+						/>
 					</div>
 
 					<div className="col-md-3">
@@ -49,7 +75,11 @@ export default function HomePage() {
 			</div>
 		</div>
 	);
-}
+};
+
+export default HomePage;
+
+HomePage.preload = () => ({ head: <Head title="Home" /> });
 
 function parseQuery(url: URL) {
 	const tag = url.searchParams.get("tag");

@@ -1,21 +1,25 @@
-import React, { FC, useEffect, useRef, useState } from "react";
-import { Article, NewArticle } from "~/client/interfaces";
-import { ConduitError } from "lib/conduit-error";
-import { useLocation } from "rakkasjs";
-import { ActionButton } from "lib/ActionButton";
+import { FC, useRef, useState } from "react";
+import {
+	navigate,
+	useLocation,
+	useMutation,
+	usePageContext,
+	useQuery,
+} from "rakkasjs";
+import { ActionButton } from "~/components/atoms/ActionButton";
+import { NewArticle, UpdateArticle } from "~/lib/validation";
+import { ConduitError } from "~/lib/conduit-error";
 
 interface ArticleEditorProps {
-	mode: "create" | "update";
-	article?: Article;
-	onSubmit(article: NewArticle): Promise<Article>;
+	slug?: string;
 }
 
-export const ArticleEditor: FC<ArticleEditorProps> = ({
-	mode,
-	onSubmit,
-	article,
-}) => {
-	const form = useRef<HTMLFormElement>(null);
+export const ArticleEditor: FC<ArticleEditorProps> = ({ slug }) => {
+	const articleResult = useQuery(slug ? `article:${slug}` : undefined, (ctx) =>
+		ctx.locals.conduit.getArticle(slug!),
+	);
+
+	const article = articleResult?.data;
 
 	const { current: currentUrl } = useLocation();
 
@@ -23,12 +27,29 @@ export const ArticleEditor: FC<ArticleEditorProps> = ({
 		currentUrl.searchParams.getAll("error"),
 	);
 
-	const mountedRef = useRef(true);
-	useEffect(() => {
-		return () => {
-			mountedRef.current = false;
-		};
-	}, []);
+	const ctx = usePageContext();
+	const saveMutation = useMutation(
+		async (article: NewArticle | UpdateArticle) => {
+			if (slug) {
+				return ctx.locals.conduit.updateArticle(slug!, article);
+			} else {
+				return ctx.locals.conduit.createArticle(article as NewArticle);
+			}
+		},
+		{
+			onSuccess(data) {
+				ctx.queryClient.setQueryData(`article:${data.slug}`, data);
+				navigate(`/article/${data.slug}`);
+			},
+			onError(error) {
+				if (error instanceof ConduitError) {
+					setErrors(error.messages);
+				}
+			},
+		},
+	);
+
+	const form = useRef<HTMLFormElement>(null);
 
 	return (
 		<div className="editor-page">
@@ -96,17 +117,11 @@ export const ArticleEditor: FC<ArticleEditorProps> = ({
 									type="primary"
 									size="large"
 									style={{ float: "right" }}
-									label={
-										mode === "create" ? "Publish Article" : "Update Article"
-									}
+									label={!article ? "Publish Article" : "Update Article"}
 									inProgressLabel={
-										mode === "create"
-											? "Publishing Article"
-											: "Updating Article"
+										!article ? "Publishing Article" : "Updating Article"
 									}
-									failedLabel={
-										mode === "create" ? "Failed to Publish" : "Update Failed"
-									}
+									failedLabel={!article ? "Failed to Publish" : "Update Failed"}
 									onClick={async () => {
 										if (!form.current)
 											throw new Error("Could not find the form element");
@@ -127,10 +142,7 @@ export const ArticleEditor: FC<ArticleEditorProps> = ({
 												.map((s) => s.trim()),
 										};
 
-										await onSubmit(article).catch((error: ConduitError) => {
-											setErrors(error.messages);
-											throw error;
-										});
+										await saveMutation.mutate(article);
 									}}
 								/>
 							</fieldset>

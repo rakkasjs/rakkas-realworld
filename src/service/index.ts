@@ -21,25 +21,24 @@ import {
 } from "~/lib/validation";
 import { z } from "zod";
 import { StatusCodes } from "http-status-codes";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/index";
 import slugify from "slugify";
 import { jwtVerify, SignJWT } from "jose";
 import { getEnv } from "./env";
 
 export class ConduitService implements ConduitInterface {
-	#userFactory?: () => Promise<UserSummary | undefined>;
+	#user?: UserSummary;
 
-	constructor(userFactory?: () => Promise<UserSummary | undefined>) {
-		this.#userFactory = userFactory;
+	constructor(user?: UserSummary) {
+		this.#user = user;
 	}
 
 	private async _ensureUser(): Promise<UserSummary> {
-		const currentUser = await this.#userFactory?.();
-		if (!currentUser) {
+		if (!this.#user) {
 			throw new ConduitError(StatusCodes.UNAUTHORIZED, "Not logged in");
 		}
 
-		return currentUser;
+		return this.#user;
 	}
 
 	async getComments(slug: string): Promise<Comment[]> {
@@ -91,11 +90,13 @@ export class ConduitService implements ConduitInterface {
 		return tags.map((tag) => tag.tagName);
 	}
 
-	async getCurrentUser(): Promise<User> {
-		const currentUser = await this._ensureUser();
+	async getCurrentUser(): Promise<User | null> {
+		if (!this.#user) {
+			return null;
+		}
 
 		const dbUser = await db.user.findUnique({
-			where: { id: currentUser.id },
+			where: { id: this.#user.id },
 			select: {
 				username: true,
 				email: true,
@@ -105,19 +106,17 @@ export class ConduitService implements ConduitInterface {
 		});
 
 		if (!dbUser) {
-			throw new ConduitError(StatusCodes.NOT_FOUND, "User not found");
+			return null;
 		}
 
 		return {
 			...dbUser,
 			image: dbUser.image,
-			token: currentUser.token,
+			token: this.#user.token,
 		};
 	}
 
 	async getProfile(username: string): Promise<Profile> {
-		const currentUser = await this.#userFactory?.();
-
 		username = z.string().parse(username);
 
 		const dbProfile = await db.user.findUnique({
@@ -126,7 +125,7 @@ export class ConduitService implements ConduitInterface {
 				username: true,
 				bio: true,
 				image: true,
-				followers: currentUser ? { where: { id: currentUser.id } } : undefined,
+				followers: this.#user ? { where: { id: this.#user.id } } : undefined,
 			},
 		});
 
@@ -231,8 +230,6 @@ export class ConduitService implements ConduitInterface {
 	}
 
 	async listArticles(options: ListArticlesOptions): Promise<ArticleList> {
-		const currentUser = await this.#userFactory?.();
-
 		let {
 			tag,
 			author,
@@ -257,7 +254,7 @@ export class ConduitService implements ConduitInterface {
 								orderBy: { id: "desc" },
 								skip: offset,
 								take: Math.min(20, Number(limit)),
-								include: getArticleInclude(currentUser?.id),
+								include: getArticleInclude(this.#user?.id),
 							},
 						},
 				  })
@@ -269,7 +266,7 @@ export class ConduitService implements ConduitInterface {
 						orderBy: { id: "desc" },
 						skip: offset,
 						take: Math.min(20, Number(limit)),
-						include: getArticleInclude(currentUser?.id),
+						include: getArticleInclude(this.#user?.id),
 				  }),
 
 			db.article.count({
@@ -329,8 +326,6 @@ export class ConduitService implements ConduitInterface {
 	}
 
 	async getArticle(slug: string): Promise<Article> {
-		const currentUser = await this.#userFactory?.();
-
 		slug = z.string().parse(slug);
 		const id = parseIdFromSlug(slug);
 
@@ -338,7 +333,7 @@ export class ConduitService implements ConduitInterface {
 
 		const dbArticle = await db.article.findUnique({
 			where: { id },
-			include: getArticleInclude(currentUser?.id),
+			include: getArticleInclude(this.#user?.id),
 		});
 
 		if (!dbArticle) {

@@ -150,10 +150,18 @@ export class ConduitClient extends RestClient implements ConduitInterface {
 		return result.tags;
 	}
 
-	async getCurrentUser(): Promise<User> {
-		const result = await this._makeRequest<{ user: User }>("/user");
+	async getCurrentUser(): Promise<User | null> {
+		const result = await this._makeRequest<{ user: User }>("/user").catch(
+			(err) => {
+				if (err instanceof ConduitError && err.status === 401) {
+					return null;
+				}
 
-		return result.user;
+				throw err;
+			},
+		);
+
+		return result?.user ?? null;
 	}
 
 	async getProfile(username: string): Promise<Profile> {
