@@ -6,30 +6,18 @@
 
 This codebase was created to demonstrate a fully fledged fullstack application built with **[Rakkas](https://rakkasjs.org)** including CRUD operations, authentication, routing, pagination, and more.
 
-**Rakkas** is quite flexible on data fetching methods. There are four implementations:
-
-- [REST](https://github.com/rakkasjs/realworld) **(this branch)**
-- [`useServerSideQuery` and `useServerSideMutation`](https://github.com/rakkasjs/realworld/blob/use-ssm)
-- [`useServerSideQuery` and form actions](https://github.com/rakkasjs/realworld/blob/form)
-- [GraphQL](https://github.com/rakkasjs/realworld/graphql)
-
-Only the REST implementation is fully complies with the RealWorld spec but deployed examples are from "`useServerSideQuery` and form actions" implementation because we feel it showcases the best practices for Rakkas applications.
-
 Head over to the [RealWorld](https://github.com/gothinkster/realworld) repo for implementations with other frontends/backends
 
 ## Deployments
 
-The same app is deployed on:
+See the same app is deployed on:
 
 - [Node](https://realworld.rakkasjs.org)
 - [Cloudflare Workers](https://rakkas-realworld.rakkasjs.workers.dev/)
 - [Vercel Serverless Functions](https://rakkas-realworld.vercel.app/)
-- [Vercel Edge Functions](--TODO--)
 - [Netlify](https://rakkas-realworld.netlify.app/)
-- [Netlify Edge Functions](--TODO--)
-- [Deno Deploy](--TODO--)
 
-Only the Node deployments supports authentication features because in serverless environments it's hard or impossible to use `bcrypt` and there is little CPU time available for secure hashing. None-Node deployments use the Node deployment as an authentication backend.
+Only the Node deployment supports authentication features because in serverless environments there is too little CPU time available for secure hashing. None-Node deployments use the Node deployment as their authentication backend.
 
 ## Getting started
 
@@ -42,24 +30,32 @@ pnpm install
 Rakkas RealWorld requires some environment variables to be set for configuration:
 
 | Variable        | Description                                                                      |
-| --------------- | -------------------------------------------------------------------------------- | --- |
+| --------------- | -------------------------------------------------------------------------------- |
 | `HOST`          | Host name or address (defaults to `localhost`)                                   |
 | `PORT`          | Port number (defaults to `3000`)                                                 |
-| `DATABASE_URL`  | Database URL (`postgresql://user:password@host/database`)                        | \_  |
+| `DATABASE_URL`  | Prisma database URL (`postgresql://user:password@host/database`)                 |
 | `SERVER_SECRET` | A random string used to sign the JWT                                             |
 | `SALT_ROUNDS`   | Bcrypt cost factor for hashing the passwords before storing them to the database |
 
-If you want to deploy on a serverless or edge target, you should also set the `AUTH_API` variable and point it to a Node deployment.
+If you want to deploy on a serverless or edge target, you should also set the `AUTH_API` variable and point it to a Node deployment. Also, the Prisma database URL should be set to a [data proxy](https://www.prisma.io/docs/data-platform/data-proxy) URL.
 
 For production, if your server is going to run behind a reverse proxy (as it should!), you must also add `TRUST_FORWARDED_ORIGIN=1` and configure your reverse proxy to set the headers `X-Forwarded-Proto`, `X-Forwarded-Host`, `X-Forwarded-Server`, `X-Forwarded-For` appropriately.
 
-Once the environment variables are set, you should then generate the Prisma client with `pnpx prisma generate`. Then you can start a dev server with `pnpm dev`.
+You can use the `pnpm run configure` script to generate a `.env` file appropriate for a development environment.
+
+Once the environment variables are set, you should then generate the Prisma client with `pnpx prisma generate` (or `pnpx prisma generate --data-proxy`). Then you can start a dev server with `pnpm dev`.
 
 When you're happy with the results, you can build and run a production server with these commands:
 
 ```sh
 pnpm build # Build the app
 pnpm start # Start production server
+```
+
+Replace the `build` command with `build:cfw`, `build:netlify`, or `build:vercel` to build for Cloudflare Workers, Netlify, or Vercel respectively. Currently the bundler issues a lot of warnings you can ignore that look like this:
+
+```
+▲ [WARNING] Ignoring this import because <file name here> was marked as having no side effects [ignored-bare-import]
 ```
 
 ## How it works
@@ -72,7 +68,7 @@ The `src/api/_rest` directory contains an implementation of the [Conduit API spe
 
 #### Test API
 
-The `src/api/test` folder contains a few endpoints intended to be used as testing helpers. `/api/test/ping` responds to `HEAD` requests in order to detect the time the server becomes functional before starting the tests. A `POST` request to `/api/test/reset` resets the database, it is called before starting an integration test. A `POST` request to `/api/test/populate` or `/api/test/populate-2` seeds the database with some test data and `POST /api/test/create-user` creates a user. A middleware protects these endpoints and only allows them to run when `NODE_ENV` environment variable is set to `test`.
+The `src/api/test` folder contains a few endpoints intended to be used as testing helpers. `/api/test/ping` responds to `HEAD` requests in order to detect the time the server becomes functional before starting the tests. A `POST` request to `/api/test/reset` resets the database, it is called before starting an integration test. A `POST` request to `/api/test/populate` or `/api/test/populate-2` seeds the database with some test data and `POST /api/test/create-user` creates a user. A middleware guards these endpoints and only allows them to run when `NODE_ENV` environment variable is set to `test`.
 
 ### Frontend
 
@@ -86,11 +82,11 @@ One small thing that you may find strange is the use of uncontrolled form elemen
 
 There are three types of tests in **Rakkas RealWorld**:
 
-| Command           | Description      |
-| ----------------- | ---------------- |
-| npm run test:unit | Unit tests       |
-| npm run test:api  | API tests        |
-| npm run test:e2e  | End-to-end tests |
+| Command        | Description      |
+| -------------- | ---------------- |
+| pnpm test:unit | Unit tests       |
+| pnpm test:api  | API tests        |
+| pnpm test:e2e  | End-to-end tests |
 
 Before running the API or end-to-end tests, you have to start a development or production server on `localhost:3000` with `NODE_ENV` environment variable set to `test`.
 
@@ -104,7 +100,7 @@ Since most of the **Rakkas RealWorld** core consists of either dumb view code co
 
 ### Porting to other database systems
 
-Thanks to Prisma, **Rakkas RealWorld** is known to be able to run on MySQL/MariaDB or PostgreSQL as well as on SQLite. Just follow these steps:
+Thanks to Prisma, **Rakkas RealWorld** is known to be able to run on MySQL/MariaDB or SQLite as well as on PostgreSQL. Just follow these steps:
 
 1. Change the `provider` in the file `prisma/schema.prisma` to `mysql` or `sqlite`.
 2. Remove the `prisma/migrations` directory and its contents.
@@ -112,7 +108,7 @@ Thanks to Prisma, **Rakkas RealWorld** is known to be able to run on MySQL/Maria
 4. Recreate the initial migration with `npx prisma migrate dev`.
 5. Run the [tests](#testing) to make sure everything works fine.
 
-See the [SQLite branch](https://github.com/rakkasjs/rakkas-realworld/tree/sqlite) for an example of how to port to SQLite. Porting to MongoDB or SQL Server should be similarly straightforward but it hasn't been tested.
+Porting to MongoDB or SQL Server should be similarly straightforward but it hasn't been tested.
 
 ### Connecting to a different backend
 

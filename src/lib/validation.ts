@@ -1,13 +1,12 @@
 import { z } from "zod";
-import isURL from "validator/lib/isURL";
 
 export type NewUser = z.infer<typeof NewUser>;
 export const NewUser = z.object({
-	username: z.string().nonempty("can't be blank"),
-	email: z.string().nonempty("can't be blank").email("is invalid"),
+	username: z.string().min(1, "can't be blank"),
+	email: z.string().min(1, "can't be blank").email("is invalid"),
 	password: z
 		.string()
-		.nonempty("can't be blank")
+		.min(1, "can't be blank")
 		.min(8, "is too short (minimum is 8 characters)"),
 });
 
@@ -37,9 +36,9 @@ export const UpdateUser = z
 		email: z.string().email("is invalid"),
 		password: z
 			.string()
-			.nonempty("can't be blank")
+			.min(1, "can't be blank")
 			.min(8, "is too short (minimum is 8 characters)"),
-		username: z.string().nonempty("can't be blank"),
+		username: z.string().min(1, "can't be blank"),
 		bio: z.string(),
 		image: z.string().refine((s) => !s || isURL(s), "is invalid"),
 	})
@@ -47,18 +46,27 @@ export const UpdateUser = z
 
 export type NewArticle = z.infer<typeof NewArticle>;
 export const NewArticle = z.object({
-	title: z.string().nonempty("can't be blank"),
-	description: z.string().nonempty("can't be blank"),
-	body: z.string().nonempty("can't be blank"),
+	title: z.string().min(1, "can't be blank"),
+	description: z.string().min(1, "can't be blank"),
+	body: z.string().min(1, "can't be blank"),
 	tagList: z.array(z.string()),
 });
 
 export type UpdateArticle = z.infer<typeof UpdateArticle>;
 export const UpdateArticle = z
 	.object({
-		title: z.string().nonempty("can't be blank"),
-		description: z.string().nonempty("can't be blank"),
-		body: z.string().nonempty("can't be blank"),
-		tagList: z.array(z.string().nonempty()),
+		title: z.string().min(1, "can't be blank"),
+		description: z.string().min(1, "can't be blank"),
+		body: z.string().min(1, "can't be blank"),
+		tagList: z.array(z.string().min(1)),
 	})
 	.partial();
+
+function isURL(s: string) {
+	try {
+		new URL(s);
+		return true;
+	} catch {
+		return false;
+	}
+}

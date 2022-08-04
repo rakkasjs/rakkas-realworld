@@ -231,13 +231,9 @@ export class ConduitService implements ConduitInterface {
 	}
 
 	async listArticles(options: ListArticlesOptions): Promise<ArticleList> {
-		let {
-			tag,
-			author,
-			favorited,
-			limit = 20,
-			offset = 0,
-		} = ListArticlesOptions.parse(options);
+		const parsed = ListArticlesOptions.parse(options);
+		const { tag, author, favorited } = parsed;
+		let { limit = 20, offset = 0 } = parsed;
 
 		if (limit > 20) limit = 20;
 		if (offset < 0) offset = 0;

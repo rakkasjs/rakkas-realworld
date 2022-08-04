@@ -1,3 +1,4 @@
+/* eslint-disable ssr-friendly/no-dom-globals-in-constructor */
 import {
 	Article,
 	ArticleList,

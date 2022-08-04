@@ -3,14 +3,18 @@ import rakkas from "rakkasjs/vite-plugin";
 import path from "path";
 import tsconfigPaths from "vite-tsconfig-paths";
 
+const target = process.env.RAKKAS_TARGET || "node";
+
 export default defineConfig({
 	resolve: {
 		alias:
-			process.env.RAKKAS_TARGET === "node"
+			target === "node"
 				? {
+						// ESM/CJS compatibility issues
 						"@prisma/client/runtime": "@prisma/client/runtime/index",
 				  }
 				: {
+						// Serverless-compatible replacements
 						bcrypt: "bcryptjs",
 						"@prisma/client/runtime": "@prisma/client/runtime/edge",
 						"@prisma/client": "@prisma/client/edge",
@@ -20,12 +24,12 @@ export default defineConfig({
 	plugins: [
 		tsconfigPaths(),
 		rakkas({
-			adapter: (process.env.RAKKAS_TARGET as any) || "node",
+			adapter: (target as any) || "node",
 		}),
-		// TODO: Serverless
-		process.env.RAKKAS_TARGET !== "node" && {
+		// Stub for serverless
+		target !== "node" && {
 			enforce: "pre",
-			name: "stub",
+			name: "rakkasjs-realowrld-auth-stub",
 			resolveId(id) {
 				if (id === path.resolve("src/lib/auth-service")) {
 					return path.resolve("src/lib/auth-service-stub.ts");

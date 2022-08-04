@@ -50,7 +50,13 @@ export async function post(): Promise<Response> {
 
 	return json({
 		slugs,
-		john: { ...john, token: await createSignedToken(john.id) },
-		jane: { ...jane, token: await createSignedToken(jane.id) },
+		john: {
+			...john,
+			token: await createSignedToken(john.id, process.env.SERVER_SECRET!),
+		},
+		jane: {
+			...jane,
+			token: await createSignedToken(jane.id, process.env.SERVER_SECRET!),
+		},
 	});
 }

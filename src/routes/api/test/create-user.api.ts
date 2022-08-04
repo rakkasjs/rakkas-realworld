@@ -11,7 +11,10 @@ export async function post(ctx: RequestContext) {
 
 	return createUser(username)
 		.then(async (u) => {
-			const user: User = { ...u, token: await createSignedToken(u.id) };
+			const user: User = {
+				...u,
+				token: await createSignedToken(u.id, process.env.SERVER_SECRET!),
+			};
 
 			return json({ user });
 		})

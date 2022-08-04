@@ -1,3 +1,4 @@
+/* eslint-disable ssr-friendly/no-dom-globals-in-module-scope */
 import { startClient } from "rakkasjs";
 import { parse, serialize } from "cookie";
 import { ConduitAuthClient, ConduitClient } from "~/client";

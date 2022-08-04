@@ -7,6 +7,8 @@ import url from "url";
 import crypto from "crypto";
 import readline from "readline";
 
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+
 export async function go() {
 	const prod = process.env.NODE_ENV === "production";
 
@@ -14,11 +16,7 @@ export async function go() {
 	const PORT = prod
 		? await findFreePort(3000)
 		: process.env.PORT || (await findFreePort(3000));
-	const DATABASE_URL =
-		process.env.DATABASE_URL ||
-		(prod
-			? url.pathToFileURL(await getDbFileName())
-			: url.pathToFileURL(path.join(__dirname, "db.sqlite")));
+	const DATABASE_URL = process.env.DATABASE_URL || (await getDbFileName());
 	const SERVER_SECRET =
 		process.env.SERVER_SECRET || crypto.randomBytes(48).toString("hex");
 	const SALT_ROUNDS =
@@ -48,16 +46,18 @@ function calculateSaltRounds() {
 	return rounds;
 }
 
-async function getDbFileName(): Promise<string> {
+async function getDbFileName() {
 	const rl = readline.createInterface({
 		input: process.stdin,
 		output: process.stdout,
 	});
 
 	return new Promise((resolve) => {
-		rl.question("Absolute file path for the database? ", (answer) => {
+		rl.question("Database connection URL? ", (answer) => {
 			resolve(answer);
 			rl.close();
 		});
 	});
 }
+
+go();
