@@ -26,7 +26,7 @@ export default createRequestHandler({
 						"Token ".length,
 					) || ctx.cookie.authToken;
 
-				const env = getEnv(ctx);
+				const env = getEnv();
 
 				const userSummary = await verifyToken(authToken, env.SERVER_SECRET);
 
