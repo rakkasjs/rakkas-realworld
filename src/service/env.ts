@@ -1,3 +1,5 @@
+import { RequestContext } from "rakkasjs";
+
 // eslint-disable-next-line @typescript-eslint/no-namespace
 declare namespace globalThis {
 	let conduitEnv: ConduitEnv | undefined;
@@ -10,18 +12,25 @@ interface ConduitEnv {
 	AUTH_API_URL?: string;
 }
 
-export function getEnv(): ConduitEnv {
+export function getEnv(ctx: RequestContext): ConduitEnv {
 	const globalEnv = globalThis.conduitEnv;
 	if (globalEnv) return globalEnv;
-
-	const env = process.env;
 
 	const {
 		DATABASE_URL,
 		SALT_ROUNDS: SALT_ROUNDS_RAW,
 		SERVER_SECRET,
 		AUTH_API_URL,
-	} = env;
+	} = {
+		DATABASE_URL:
+			(ctx.platform as any).env?.DATABASE_URL || process.env.DATABASE_URL,
+		SALT_ROUNDS:
+			(ctx.platform as any).env?.SALT_ROUNDS || process.env.SALT_ROUNDS,
+		SERVER_SECRET:
+			(ctx.platform as any).env?.SERVER_SECRET || process.env.SERVER_SECRET,
+		AUTH_API_URL:
+			(ctx.platform as any).env?.AUTH_API_URL || process.env.AUTH_API_URL,
+	};
 
 	if (!DATABASE_URL) throw new Error("DATABASE_URL is not defined");
 

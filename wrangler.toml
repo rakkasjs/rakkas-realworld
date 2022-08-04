@@ -1,15 +1,14 @@
 compatibility_date = "2021-11-01"
-compatibility_flags = []
+compatibility_flags = [
+  "streams_enable_constructors",
+]
+main = "dist/server/cloudflare-workers-bundle.js"
 name = "rakkas-realworld"
-route = ''
-site = {bucket = "cloudflare/static", entry-point = "cloudflare"}
-type = "javascript"
-usage_model = ''
+usage_model = 'bundled'
 workers_dev = true
-zone_id = ''
+
+[site]
+bucket = "./dist/client"
 
 [build]
-command = "npm run build:cloudflare-workers"
-
-[build.upload]
-format = "service-worker"
+# command = "npm run build:cfw"

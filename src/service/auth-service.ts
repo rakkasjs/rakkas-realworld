@@ -1,18 +1,26 @@
-import { hash, compare } from "bcrypt";
+/* eslint-disable import/no-named-as-default-member */
+import bcrypt from "bcrypt";
 import { StatusCodes } from "http-status-codes";
 import { db } from "./db";
-import { getEnv } from "./env";
 import { ConduitAuthInterface, User, UserSummary } from "~/client/interfaces";
 import { NewUser, LoginCredentials, UpdateUser } from "~/lib/validation";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/index";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { ConduitError } from "~/lib/conduit-error";
 import { createSignedToken } from "~/service";
 
 export class ConduitAuthService implements ConduitAuthInterface {
 	#user?: UserSummary;
+	#saltRounds: number;
+	#secret: string;
 
-	constructor(user?: UserSummary | undefined) {
+	constructor(
+		user: UserSummary | undefined,
+		saltRounds: number,
+		secret: string,
+	) {
 		this.#user = user;
+		this.#saltRounds = saltRounds || 12;
+		this.#secret = secret;
 	}
 
 	async register(user: NewUser): Promise<User> {
@@ -20,8 +28,7 @@ export class ConduitAuthService implements ConduitAuthInterface {
 
 		const { username, email, password } = user;
 
-		const { SALT_ROUNDS } = getEnv();
-		const passwordHash = await hash(password, SALT_ROUNDS || 12);
+		const passwordHash = await bcrypt.hash(password, this.#saltRounds);
 
 		try {
 			const { id, ...rest } = await db.user.create({
@@ -43,7 +50,7 @@ export class ConduitAuthService implements ConduitAuthInterface {
 				},
 			});
 
-			const token = await createSignedToken(id);
+			const token = await createSignedToken(id, this.#secret);
 
 			return { ...rest, token };
 		} catch (error) {
@@ -112,7 +119,7 @@ export class ConduitAuthService implements ConduitAuthInterface {
 
 		const { passwordHash, id, ...user } = found;
 
-		const isCorrect = await compare(password, passwordHash || "");
+		const isCorrect = await bcrypt.compare(password, passwordHash || "");
 
 		if (!isCorrect) {
 			throw new ConduitError(StatusCodes.UNPROCESSABLE_ENTITY, undefined, {
@@ -120,7 +127,7 @@ export class ConduitAuthService implements ConduitAuthInterface {
 			});
 		}
 
-		const token = await createSignedToken(id);
+		const token = await createSignedToken(id, this.#secret);
 
 		return { ...user, token };
 	}
@@ -132,8 +139,7 @@ export class ConduitAuthService implements ConduitAuthInterface {
 
 		let passwordHash: string | undefined;
 		if (password) {
-			const { SALT_ROUNDS } = getEnv();
-			passwordHash = await hash(password, SALT_ROUNDS || 12);
+			passwordHash = await bcrypt.hash(password, this.#saltRounds);
 		}
 
 		const dbUser = await db.user.update({

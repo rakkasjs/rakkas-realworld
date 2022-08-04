@@ -21,16 +21,17 @@ import {
 } from "~/lib/validation";
 import { z } from "zod";
 import { StatusCodes } from "http-status-codes";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/index";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import slugify from "slugify";
 import { jwtVerify, SignJWT } from "jose";
-import { getEnv } from "./env";
 
 export class ConduitService implements ConduitInterface {
 	#user?: UserSummary;
+	#secret: string;
 
-	constructor(user?: UserSummary) {
+	constructor(user: UserSummary | undefined, secret: string) {
 		this.#user = user;
+		this.#secret = secret;
 	}
 
 	private async _ensureUser(): Promise<UserSummary> {
@@ -605,13 +606,14 @@ export class ConduitService implements ConduitInterface {
 
 export { ConduitAuthService } from "./auth-service";
 
-export async function createSignedToken(userId: number): Promise<string> {
-	const { SERVER_SECRET } = getEnv();
-
+export async function createSignedToken(
+	userId: number,
+	serverSecret: string,
+): Promise<string> {
 	const secret =
 		typeof atob === "function"
-			? Uint8Array.from(atob(SERVER_SECRET), (c) => c.charCodeAt(0))
-			: Buffer.from(SERVER_SECRET, "base64");
+			? Uint8Array.from(atob(serverSecret), (c) => c.charCodeAt(0))
+			: Buffer.from(serverSecret, "base64");
 
 	return await new SignJWT({ id: userId })
 		.setProtectedHeader({ alg: "HS256" })
@@ -619,16 +621,15 @@ export async function createSignedToken(userId: number): Promise<string> {
 }
 
 export async function verifyToken(
-	token?: string,
+	token: string | undefined,
+	serverSecret: string,
 ): Promise<UserSummary | undefined> {
 	if (!token) return undefined;
 
-	const { SERVER_SECRET } = getEnv();
-
 	const secret =
 		typeof atob === "function"
-			? Uint8Array.from(atob(SERVER_SECRET), (c) => c.charCodeAt(0))
-			: Buffer.from(SERVER_SECRET, "base64");
+			? Uint8Array.from(atob(serverSecret), (c) => c.charCodeAt(0))
+			: Buffer.from(serverSecret, "base64");
 
 	try {
 		const { payload } = await jwtVerify(token, secret, {

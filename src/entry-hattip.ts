@@ -6,6 +6,7 @@ import { ZodError } from "zod";
 import { json } from "@hattip/response";
 import { zodToConduitError } from "~/lib/zod-to-conduit-error";
 import { StatusCodes } from "http-status-codes";
+import { getEnv } from "~/service/env";
 
 (ZodError.prototype as any).toResponse = function toResponse() {
 	return json(
@@ -25,7 +26,9 @@ export default createRequestHandler({
 						"Token ".length,
 					) || ctx.cookie.authToken;
 
-				const userSummary = await verifyToken(authToken);
+				const env = getEnv(ctx);
+
+				const userSummary = await verifyToken(authToken, env.SERVER_SECRET);
 
 				const parsedApiUrl = new URL(apiUrl, ctx.url);
 
@@ -39,8 +42,15 @@ export default createRequestHandler({
 								process.env.AUTH_API_URL,
 								authToken,
 						  )
-						: new ConduitAuthService(userSummary);
-					ctx.locals.conduit = new ConduitService(userSummary);
+						: new ConduitAuthService(
+								userSummary,
+								env.SALT_ROUNDS,
+								env.SERVER_SECRET,
+						  );
+					ctx.locals.conduit = new ConduitService(
+						userSummary,
+						env.SERVER_SECRET,
+					);
 				} else {
 					// Use a remote API
 					ctx.locals.auth = new ConduitAuthClient(

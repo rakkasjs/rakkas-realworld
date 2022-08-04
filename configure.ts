@@ -1,6 +1,7 @@
+/* eslint-disable import/no-named-as-default-member */
 import fs from "fs";
 import path from "path";
-import { hashSync } from "bcrypt";
+import bcrypt from "bcrypt";
 import findFreePort from "find-free-port";
 import url from "url";
 import crypto from "crypto";
@@ -39,7 +40,7 @@ function calculateSaltRounds() {
 	let rounds;
 	for (rounds = 8; rounds < 30; ++rounds) {
 		const start = process.hrtime();
-		hashSync("topsecret", rounds);
+		bcrypt.hashSync("topsecret", rounds);
 		const elapsed = process.hrtime(start)[1] / 1_000_000;
 		if (elapsed >= 250) break;
 	}
