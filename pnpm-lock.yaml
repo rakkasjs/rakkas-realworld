@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@hattip/adapter-cloudflare-workers': ^0.0.19
+  '@hattip/adapter-deno': ^0.0.19
   '@hattip/adapter-netlify-functions': ^0.0.19
   '@hattip/compose': ^0.0.19
   '@hattip/cookie': ^0.0.19
@@ -41,6 +42,7 @@ specifiers:
   zod: ^3.19.1
 
 dependencies:
+  '@hattip/adapter-deno': 0.0.19
   '@hattip/cookie': 0.0.19
   '@hattip/response': 0.0.19
   '@prisma/client': 4.5.0_prisma@4.5.0
@@ -442,6 +444,12 @@ packages:
     dependencies:
       '@hattip/core': 0.0.19
     dev: true
+
+  /@hattip/adapter-deno/0.0.19:
+    resolution: {integrity: sha512-iMY7Hpy5Vyzwh7JMOnHc2krYIh8E5gkOsqfwD1dvsASfLRIjGn4QUVNPSfvtJhPnmEwpPegVwL4SqD0HLvKKbA==}
+    dependencies:
+      '@hattip/core': 0.0.19
+    dev: false
 
   /@hattip/adapter-netlify-functions/0.0.19:
     resolution: {integrity: sha512-U5v6anN+m341BeupQdT2hRnERJG6PCyn30eIPYG+ifsJwRXoif5RbfofwDIs7u03GJ2/2VtW1MtK6fYELgnONQ==}
