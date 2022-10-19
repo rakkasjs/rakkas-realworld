@@ -36,9 +36,4 @@ async function precomputePasswordHashes() {
 	for (const fullName of NAMES) {
 		output.push([fullName, await bcrypt.hash(`${fullName}'s password`, 8)]);
 	}
-
-	console.log(output);
-
-	console.log("John Doe:", await bcrypt.hash("topsecret", 8));
-	console.log("Jane Foo:", await bcrypt.hash("nopeeky!", 8));
 }
