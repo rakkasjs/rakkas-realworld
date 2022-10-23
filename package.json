@@ -1,11 +1,12 @@
 {
 	"name": "rakkas-realworld-demo",
 	"private": true,
+	"version": "2.0.0",
 	"type": "module",
 	"description": "Rakkas RealWorld demo",
 	"scripts": {
 		"dev": "dotenv vite dev",
-		"build": "prisma generate && rakkas build",
+		"build": "prisma generate --data-proxy && rakkas build",
 		"build:cfw": "prisma generate --data-proxy && RAKKAS_TARGET=cloudflare-workers rakkas build",
 		"build:netlify": "prisma generate --data-proxy && RAKKAS_TARGET=netlify rakkas build",
 		"build:vercel": "prisma generate --data-proxy && RAKKAS_TARGET=vercel rakkas build",
@@ -27,6 +28,7 @@
 	],
 	"dependencies": {
 		"@hattip/adapter-deno": "^0.0.19",
+		"@hattip/compose": "^0.0.19",
 		"@hattip/cookie": "^0.0.19",
 		"@hattip/response": "^0.0.19",
 		"@prisma/client": "^4.5.0",
@@ -47,7 +49,7 @@
 	"devDependencies": {
 		"@hattip/adapter-cloudflare-workers": "^0.0.19",
 		"@hattip/adapter-netlify-functions": "^0.0.19",
-		"@hattip/compose": "^0.0.19",
+		"@hattip/bundler-deno": "^0.0.19",
 		"@rakkasjs/eslint-config": "0.6.1",
 		"@types/bcrypt": "^5.0.0",
 		"@types/cookie": "^0.5.1",
@@ -59,6 +61,8 @@
 		"@types/set-cookie-parser": "^2.4.1",
 		"bcryptjs": "^2.4.3",
 		"cypress": "^10.10.0",
+		"esbuild": "^0.15.12",
+		"esbuild-plugin-polyfill-node": "^0.1.2",
 		"eslint": "^8.25.0",
 		"node-fetch": "^3.2.10",
 		"prettier": "^2.7.1",

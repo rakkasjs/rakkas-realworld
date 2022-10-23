@@ -16,7 +16,7 @@ See the same app is deployed on:
 - [Cloudflare Workers](https://rakkas-realworld.rakkasjs.workers.dev/)
 - [Vercel Serverless Functions](https://rakkas-realworld.vercel.app/)
 - [Netlify](https://rakkas-realworld.netlify.app/)
-- [Deno Deploy](https://rakkas-realworld.deno.dev/) (requires manual tweaks for now)
+- [Deno Deploy](https://rakkas-realworld.deno.dev/)
 
 Only the Node deployment supports authentication features because in serverless environments there is too little CPU time available for secure hashing. None-Node deployments use the Node deployment as their authentication backend.
 
