@@ -6,7 +6,4 @@ declare namespace globalThis {
 }
 
 export const db =
-	globalThis.prismaClient ||
-	(globalThis.prismaClient = new PrismaClient({
-		datasources: { db: { url: process.env.DATABASE_URL } },
-	}));
+	globalThis.prismaClient || (globalThis.prismaClient = new PrismaClient());
