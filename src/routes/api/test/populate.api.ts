@@ -3,43 +3,55 @@ import { db } from "~/service/db";
 export async function post() {
 	// Create 26 random users with one article by each
 
-	await db.user.createMany({
-		data: USERS.map(([fullName, passwordHash]) => {
-			const [name, surname] = fullName.split(" ");
+	for (const [fullName, passwordHash] of USERS) {
+		const [name, surname] = fullName.split(" ");
 
-			return {
+		await db.user.create({
+			data: {
 				username: fullName,
 				email: `${name.toLowerCase()}.${surname.toLowerCase()}@example.com`,
 				passwordHash,
 				bio: `${fullName}'s bio`,
 				image: `https://ui-avatars.com/api/?name=${name}+${surname}`,
-			};
-		}),
-	});
+			},
+		});
+	}
 
 	const userIds = await db.user.findMany({ select: { id: true } });
 
-	await db.article.createMany({
-		data: USERS.map(([fullName], i) => {
-			return {
-				authorId: userIds[i].id,
+	for (const [i, [fullName]] of USERS.entries()) {
+		await db.article.create({
+			data: {
+				author: { connect: { id: userIds[i].id } },
 				title: `${fullName}'s article #${i} title`,
 				description: `${fullName}'s article #${i} description`,
 				body: `${fullName}'s article #${i} body`,
-			};
-		}),
-	});
+			},
+		});
+	}
 
 	const articleIds = await db.article.findMany({ select: { id: true } });
-	await db.articleTags.createMany({
-		data: articleIds
-			.map((article, i) => [
-				{ articleId: article.id, tagName: USERS[i][0] },
-				{ articleId: article.id, tagName: `x${Math.floor(i / 10)}` },
-				{ articleId: article.id, tagName: `y${i % 10}` },
-			])
-			.flat(),
-	});
+
+	for (const [i, article] of articleIds.entries()) {
+		await db.articleTags.create({
+			data: {
+				articleId: article.id,
+				tagName: USERS[i][0],
+			},
+		});
+		await db.articleTags.create({
+			data: {
+				articleId: article.id,
+				tagName: `x${Math.floor(i / 10)}`,
+			},
+		});
+		await db.articleTags.create({
+			data: {
+				articleId: article.id,
+				tagName: `y${i % 10}`,
+			},
+		});
+	}
 
 	return new Response();
 }

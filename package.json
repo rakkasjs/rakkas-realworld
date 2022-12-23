@@ -6,7 +6,7 @@
 	"description": "Rakkas RealWorld demo",
 	"scripts": {
 		"dev": "dotenv rakkas dev",
-		"build": "prisma generate --data-proxy && rakkas build",
+		"build": "prisma generate && rakkas build",
 		"build:cfw": "prisma generate --data-proxy && RAKKAS_TARGET=cloudflare-workers rakkas build",
 		"build:netlify": "prisma generate --data-proxy && RAKKAS_TARGET=netlify rakkas build",
 		"build:vercel": "prisma generate --data-proxy && RAKKAS_TARGET=vercel rakkas build",

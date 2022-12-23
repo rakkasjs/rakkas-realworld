@@ -9,7 +9,7 @@ export async function post(): Promise<Response> {
 	const john = await createUser("John Doe");
 	const jane = await createUser("Jane Foo");
 
-	const articles: Prisma.ArticleCreateManyInput[] = [];
+	const articles: Prisma.ArticleCreateInput[] = [];
 	const tags: Array<{ articleNo: number; name: string }> = [];
 
 	db.article.create;
@@ -17,7 +17,10 @@ export async function post(): Promise<Response> {
 	for (let i = 0; i < 50; i++) {
 		const user = i < 25 ? "John" : "Jane";
 		articles.push({
-			authorId: user === "John" ? john.id : jane.id,
+			author:
+				user === "John"
+					? { connect: { id: john.id } }
+					: { connect: { id: jane.id } },
 			title: `${user}'s article #${i} title`,
 			description: `${user}'s article #${i} description`,
 			body: `${user}'s article #${i} body`,
@@ -28,7 +31,9 @@ export async function post(): Promise<Response> {
 		tags.push({ articleNo: i, name: `y${i % 10}` });
 	}
 
-	await db.article.createMany({ data: articles });
+	for (const article of articles) {
+		await db.article.create({ data: article });
+	}
 
 	const articleIds = (
 		await db.article.findMany({
@@ -41,12 +46,14 @@ export async function post(): Promise<Response> {
 		slugify(`${a.title}-${articleIds[i]}`, { lower: true, strict: true }),
 	);
 
-	await db.articleTags.createMany({
-		data: tags.map((tag) => ({
-			articleId: articleIds[tag.articleNo],
-			tagName: tag.name,
-		})),
-	});
+	for (const tag of tags) {
+		await db.articleTags.create({
+			data: {
+				articleId: articleIds[tag.articleNo],
+				tagName: tag.name,
+			},
+		});
+	}
 
 	return json({
 		slugs,

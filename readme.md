@@ -106,8 +106,9 @@ Thanks to Prisma, **Rakkas RealWorld** is known to be able to run on MySQL/Maria
 1. Change the `provider` in the file `prisma/schema.prisma` to `mysql` or `sqlite`.
 2. Remove the `prisma/migrations` directory and its contents.
 3. Change the `DATABASE_URL` environment variable to a [connection URL](https://www.prisma.io/docs/reference/database-reference/connection-urls) for the target database.
-4. Recreate the initial migration with `npx prisma migrate dev`.
-5. Run the [tests](#testing) to make sure everything works fine.
+4. Regenerate the Prisma client with `pnpx prisma generate`.
+5. Recreate the initial migration with `pnpx prisma migrate dev`.
+6. Run the [tests](#testing) to make sure everything works fine.
 
 Porting to MongoDB or SQL Server should be similarly straightforward but it hasn't been tested.
 
