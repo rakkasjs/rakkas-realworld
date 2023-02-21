@@ -7,21 +7,6 @@ import { bundleForDeno } from "./bundle-for-deno";
 const target = process.env.RAKKAS_TARGET || "node";
 
 export default defineConfig({
-	resolve: {
-		alias:
-			target === "node"
-				? {
-						// ESM/CJS compatibility issues
-						"@prisma/client/runtime": "@prisma/client/runtime/index",
-				  }
-				: {
-						// Serverless-compatible replacements
-						bcrypt: "bcryptjs",
-						"@prisma/client/runtime": "@prisma/client/runtime/edge",
-						"@prisma/client": "@prisma/client/edge",
-				  },
-	},
-
 	plugins: [
 		tsconfigPaths(),
 		rakkas({
@@ -50,4 +35,9 @@ export default defineConfig({
 			},
 		},
 	],
+
+	optimizeDeps: {
+		include: ["cookie", "http-status-codes", "react-markdown"],
+		exclude: ["@hattip/response"],
+	},
 });

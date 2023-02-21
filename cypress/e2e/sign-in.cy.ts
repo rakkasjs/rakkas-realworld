@@ -10,7 +10,7 @@ installAssertions();
 describe("Sign in page", () => {
 	beforeEach(() => resetDb());
 
-	it.only("logs in", () => {
+	it("logs in", () => {
 		cy.visit("/");
 		waitForJs();
 

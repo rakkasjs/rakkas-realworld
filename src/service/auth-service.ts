@@ -4,7 +4,7 @@ import { StatusCodes } from "http-status-codes";
 import { db } from "./db";
 import { ConduitAuthInterface, User, UserSummary } from "~/client/interfaces";
 import { NewUser, LoginCredentials, UpdateUser } from "~/lib/validation";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { ConduitError } from "~/lib/conduit-error";
 import { createSignedToken } from "~/service";
 

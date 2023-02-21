@@ -21,7 +21,7 @@ import {
 } from "~/lib/validation";
 import { z } from "zod";
 import { StatusCodes } from "http-status-codes";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import slugify from "slugify";
 import { jwtVerify, SignJWT } from "jose";
 
